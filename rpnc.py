@@ -11,7 +11,7 @@ def subtraction(stack):
 def division(stack):
     right = stack.pop()
     left = stack.pop()
-    stack.append(left / right)
+    stack.append(int(left / right))
 
 def exponentiation(stack):
     right = stack.pop()
@@ -28,9 +28,8 @@ ops = {
 
 stack = []
 
-from sys import stdin
-eq = stdin.readline().split()
-for token in eq:
+from sys import argv
+for token in argv[1].split():
     if token in ops:
         ops[token](stack)
     else:
