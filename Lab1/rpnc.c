@@ -1,73 +1,99 @@
 #include <stdio.h>
-#include <stdlib.h>
-/*
- * Reverse Polish Notation (RPN) Calculator
- *
- * Accepts ARGC arguments in RPN, evaluates them and prints the answer to stdout.
- *
- * Returns -1 on error, 0 otherwise.
+#include <stdlib.h> //malloc
+#include <string.h> //strlen, strtok
+
+/**
+ * Stack implentation inspired by information from
+ * https://www.geeksforgeeks.org/stack-data-structure-introduction-program/
  */
 
 typedef struct Node {
-    struct Node* next;
-    int data;
+  int data;
+  struct Node* next;
 } Node;
 
+typedef struct Stack {
+  Node* top;
+} Stack;
 
-//Node destructor
-// void freeNode(Node* N) {
-//     if( N!=NULL && *N!=NULL ){
-//       free(*N);
-//       *N = NULL;
-//     }
-// }
-
-void printStack(Node* this) {
-    if (this != NULL) {
-      printf("%d, ", this->data);
-      printStack(this -> next);
-    }
+Node* newNode(int data) {
+  Node* n = (Node*) malloc(sizeof(Node));
+  n->data = data;
+  n->next = NULL;
+  return n;
 }
 
-Node* push(Node* top, int data) {
-    printf("pushing %d to the stack \n", data);
-    Node* newTop = (struct Node*) malloc(sizeof(Node));
-    newTop -> next = top;
-    newTop -> data = data;
-    return newTop;
+Stack* newStack() {
+  Stack* S = (Stack*) malloc(sizeof(Stack));
+  S->top = NULL;
+  return S;
 }
 
-Node* pop(Node* top) {
-    if (top == NULL) {
-      printf("Come on now, I ain't got no more to give.\n");
-      return 0;
-    }
-    printf("%d is at the top of the stack\n", top->data);
-    Node* temp = top;
-    top = top -> next;
-    //free previous top Node
-    temp -> next = NULL;
-    //free(&temp);
-    printf("%d is now at the top of the stack\n", top->data);
-    return top;
+void push(Stack* S, int data) {
+  Node* n = newNode(data);
+  n->next = S->top;
+  S->top = n;
 }
 
+int pop(Stack* S) {
+  if (S == NULL) {printf("Error in pop: NULL Stack reference\n"); return 0;}
+  else if(S-> top == NULL) {printf("Cannot pop from an empty Stack\n"); return 0;}
+  int temp = S->top->data;
+  Node* n = S->top;
+  S->top = n->next;
+  n->next = NULL;
+  free(n);
+  return temp;
+}
+
+int isEmpty(Stack* S) {
+  if (S == NULL) {printf("Error in isEmpty: NULL Stack reference\n"); return 1;}
+  return !S->top;
+}
+
+int isOperator(char *c) {
+  return !(strcmp(c,"+") && strcmp(c,"-") && strcmp(c,"*") &&
+  strcmp(c,"/") && strcmp(c,"^"));
+
+}
+
+int expon(int a, int b) {
+  int result = a;
+  for (int i = 1; i < b; i++) {
+    result = a * result;
+  }
+  return result;
+}
+
+/**
+ * String tokenizing strtok referenced from
+ * https://www.tutorialspoint.com/c_standard_library/c_function_strtok.htm
+ */
 int main(int argc, char *argv[]) {
-    Node* stack = NULL;
-    for (int i = 2; i < 10; i++) {
-      stack = push(stack, i);
-      // printf("stack: ");
-      // printStack(stack);
+  Stack* S = newStack();
+  //used to iterate throuch tokens in string
+  char *token = strtok(argv[1], " ");
+  while (token != NULL) {
+    if (isOperator(token)) {
+      int right_oper = pop(S);
+      int left_oper = pop(S);
+      // decide which operator is being used, and use it
+      if (!strcmp(token, "+")) push(S, left_oper + right_oper);
+      else if (!strcmp(token, "-")) push(S, left_oper - right_oper);
+      else if (!strcmp(token, "*")) push(S, left_oper * right_oper);
+      else if (!strcmp(token, "/")) push(S, left_oper / right_oper);
+      else if (!strcmp(token, "^")) push(S, (int) expon(left_oper, right_oper));
+    } else {
+      push(S, atoi(token));
     }
+    token = strtok(NULL, " ");
+  }
+  printf("%d", pop(S));
 
-    while (stack != NULL) {
-      printf("%d \n", stack->data);
-      stack = pop(stack);
-    }
 
-    int ununsed; // here to fail warnings test, remove it
-    printf("not implemented\n");
-
-    return -1;
-
+  // while (!isEmpty(S)) {
+  //   pop(S);
+  // }
+  free(S);
+  return 0;
 }
