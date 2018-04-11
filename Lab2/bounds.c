@@ -14,16 +14,46 @@ void setup(Shape *newArena, Shape *shapes[], int numShapes) {
     arena = newArena;
 }
 
-bool ccw(float Ax, float Ay, float Bx, float By, float Cx, float Cy) {
-  return ((Cy - Ay)*(Bx - Ax) > (Bx - Ay)*(Cx - Ax));
+/*
+ * Returns true if 3 points are ordered in a counter-clockwise orientation
+ * Source:
+ * http://bryceboe.com/2006/10/23/line-segment-intersection-algorithm/
+ */
+bool ccw(Point A, Point B, Point C) {
+  return (C.y - A.y)*(B.x - A.x) > (B.y - A.y)*(C.x - A.x);
+}
+/*
+ * Returns true if two line segments intersect
+ * counter-clockwise based intersection algorithm. Source:
+ * http://bryceboe.com/2006/10/23/line-segment-intersection-algorithm/
+ */
+bool linesIntersect(Point A, Point B, Point C, Point D) {
+  //parallel lines case
+  if ((B.x - A.x)/(B.y - A.y) == (D.x - C.x)/(D.y - C.y)) {
+    return false;
+  }
+  return (ccw(A,C,D) != ccw(B,C,D)) && (ccw(A,B,C) != ccw(A,B,D));
 }
 
-// counter-clockwise based intersection algorithm. Source:
-// http://bryceboe.com/2006/10/23/line-segment-intersection-algorithm/
-bool linesIntersect(float x1, float y1, float x2, float y2) {
-  //parallel lines case
-  if ((x1/y1) == (x2/y2)) return false;
+bool polygonLineIntersect(Polygon p, Point A, Point B) {
+  for (int s = 0; s < p.numVertices - 1; s++) {
+    if (linesIntersect(A, B, p.vertices[s], p.vertices[s+1])) {
+      return true;
+    }
+  }
+  if (linesIntersect(A, B, p.vertices[p.numVertices - 1],p.vertices[0])) {
+    return true;
+  }
   return false;
+}
+
+float polygonMaxX(Polygon p) {
+  float max = p.vertices[0].x;
+  for (int i = 1; i < p.numVertices; i++) {
+    if (p.vertices[i].x > max)
+      max = p.vertices[i].x;
+  }
+  return max;
 }
 
 /*
@@ -46,6 +76,11 @@ float pointLineDistance(Point A, Point B, Point C) {
 }
 
 
+void polygonErrExit(int n) {
+  fprintf(stderr, "Error in move: Polygon must cannot have %d sides\n", n);
+  exit(-1);
+}
+
 /*
  * Move SHAPE to POINT.
  *
@@ -53,49 +88,39 @@ float pointLineDistance(Point A, Point B, Point C) {
  * ARENA parameter of setup(), FALSE otherwise.
  */
 bool move(Shape *shape, Point *point) {
-
   float d;
 
     switch (arena->type) {
       case CIRCLE :
         switch (shape->type) {
           case CIRCLE :
-
-            //Circle shape in circle arena
+            //Circle shape in Circle arena
             d = pointPointDistance(*point, ((Circle*) arena)->center);
-            // fprintf(stderr, "arena: %f,%f, radius: %f\n", ((Circle*) arena)->center.x,((Circle*) arena)->center.y,((Circle*) arena)->radius);
-            // fprintf(stderr, "shape: %f,%f, radius: %f \n", ((Circle*) shape)->center.x,((Circle*) shape)->center.z,((Circle*) shape)->radius);
-            // fprintf(stderr, "distance between radiuses: %.0f\n", distance(((Circle*) shape)->center, ((Circle*) arena)->center));
-            // fprintf(stderr, "distance: %f\n", d);
-            // fprintf(stderr, "R: %f\n", ((Circle*) arena)->radius);
-            // fprintf(stderr, "r: %f\n", ((Circle*) shape)->radius);
-            return  d + ((Circle*) shape)->radius < ((Circle*) arena)->radius;
+            return  d + ((Circle*) shape)->radius <= ((Circle*) arena)->radius;
             //end of circle shape in circle arena
 
           case POLYGON :
+            //Polygon shape in Circle arena
+            for (int i = 0; i < ((Polygon*) shape)->numVertices; i++) {
+              Point p;  //p is the new location of each vertex while testing
+                        //this assumes that the original coordinated of the
+                        //polygon have a center of mass at the origin.
+                        //Resultingly, this method is inherently flawed, and
+                        //should be redesigned later given time availability.
 
-            //Circle shape inside of polygon arena
-            if (((Polygon*) arena)->numVertices < 3) {
-              fprintf(stderr, "Error in move: Polygon must have >=3 sides\n");
-              exit(-1);
-            }
-            for (int i = 0; i < ((Polygon*) arena)->numVertices; i++) {
-                if (i == ((Polygon*) arena)->numVertices - 1) {
-                  d = pointLineDistance(((Polygon*) arena)->vertices[i],
-                      ((Polygon*) arena)->vertices[0],*point);
-                } else {
-                  d = pointLineDistance(((Polygon*) arena)->vertices[i],
-                    ((Polygon*) arena)->vertices[i+1],*point);
-                }
-                if ( d < ((Circle*) shape)->radius) {
-                    return false;
-                }
+              p.x = ((Polygon*) shape)->vertices[i].x + point->x;
+              p.y = ((Polygon*) shape)->vertices[i].y + point->y;
+              p.z = ((Polygon*) shape)->vertices[i].z + point->z;
+
+              d = pointPointDistance(p,((Circle*) arena)->center);
+              if (d > ((Circle*) arena)->radius)
+                return false;
             }
             return true;
-            //end of circle shape inside of polygon arena
-
+              //end of Polygon shape in Circle arena
 
           case REULEUX_TRIANGLE :
+            //Reuleux Triangle in a Circle Arena
             break;
           case SPHERE :
             break;
@@ -104,41 +129,71 @@ bool move(Shape *shape, Point *point) {
         }
         break;
       case POLYGON :
+        if (((Polygon*) arena)->numVertices < 3) {
+          polygonErrExit(((Polygon*) arena)->numVertices);
+        }
         switch (shape->type) {
           case CIRCLE :
-
-            //Polygon shape in Circle arena
-            for (int i = 0; i < ((Polygon*) shape)->numVertices; i++) {
-              d = pointPointDistance(((Polygon*) shape)->vertices[i],
-                                      ((Circle*) shape)->center);
-              if (d > ((Circle*) shape)->radius)
+            //Circle shape inside of polygon arena
+            for (int i = 0; i < ((Polygon*) arena)->numVertices - 1; i++) {
+                d = pointLineDistance(((Polygon*) arena)->vertices[i],
+                  ((Polygon*) arena)->vertices[i+1],*point);
+              if ( d < ((Circle*) shape)->radius) {
                   return false;
+              }
             }
-            return true;
-            //end of Polygon shape in Circle arena
+            //test the last<-->first edge
+            d = pointLineDistance(((Polygon*) arena)->vertices[0],
+              ((Polygon*) arena)->vertices[((Polygon*) arena)->numVertices - 1], *point);
+            if ( d < ((Circle*) shape)->radius) {
+                return false;
+            }
+            //at this point we know that no line segment intersects the circle
+            //return true if circle center is within some polygon bound
+            return (point->x < polygonMaxX(*((Polygon*) arena)));
+            //end of circle shape inside of polygon arena
 
           case POLYGON :
-              if (((Polygon*) arena)->numVertices < 3) {
-                fprintf(stderr, "Error in move: Polygon must have >=3 sides\n");
-                exit(-1);
-              }
+            if (((Polygon*) arena)->numVertices < 3) {
+              polygonErrExit(((Polygon*) arena)->numVertices);
+            }
+            //Polygon shape in Polygon arena
+            int num_shape_verticies = ((Polygon*) shape)->numVertices;
 
+            Point* shape_verticies = ((Polygon*) shape)->vertices;
 
-              //Polygon shape in Polygon arena
-              for (int i = 0; i < ((Polygon*) arena)->numVertices; i++) {
-                  if (i == ((Polygon*) arena)->numVertices - 1) {
-                    d = pointLineDistance(((Polygon*) arena)->vertices[i],
-                        ((Polygon*) arena)->vertices[0],*point);
-                  } else {
-                    d = pointLineDistance(((Polygon*) arena)->vertices[i],
-                      ((Polygon*) arena)->vertices[i+1],*point);
-                  }
-                  if ( d < ((Circle*) shape)->radius) {
-                      return false;
-                  }
+            //if any point's x coordinate is beyond the arena's max X coordinate
+            // it cannot be contained
+            for (int i = 0; i < num_shape_verticies; i++) {
+              if (shape_verticies[i].x + point->x > polygonMaxX(*((Polygon*) arena)))
+                return false;
+            }
+
+            Point p1;
+            Point p2;
+            //check if the arena intersects with any shape edges
+            for (int s = 0; s < num_shape_verticies - 1; s++) {
+              p1.x = shape_verticies[s].x + point->x;
+              p1.y = shape_verticies[s].y + point->y;
+              p1.z = shape_verticies[s].z + point->z;
+              p2.x = shape_verticies[s+1].x + point->x;
+              p2.y = shape_verticies[s+1].y + point->y;
+              p2.z = shape_verticies[s+1].z + point->z;
+              if (polygonLineIntersect( *((Polygon*) arena), p1, p2)) {
+                return false;
               }
-              return true;
-              //end of Polygon shape in Polygon arena
+            }
+            p1.x = shape_verticies[0].x + point->x;
+            p1.y = shape_verticies[0].y + point->y;
+            p1.z = shape_verticies[0].z + point->z;
+            p2.x = shape_verticies[num_shape_verticies - 1].x + point->x;
+            p2.y = shape_verticies[num_shape_verticies - 1].y + point->y;
+            p2.z = shape_verticies[num_shape_verticies - 1].z + point->z;
+            if (polygonLineIntersect( *((Polygon*) arena), p1, p2)) {
+              return false;
+            }
+            return true;
+            //end of Polygon shape in Polygon arena
 
           case REULEUX_TRIANGLE :
             break;
@@ -146,11 +201,7 @@ bool move(Shape *shape, Point *point) {
             break;
           case REULEUX_TETRAHEDRON :
             break;
-        }
-
-
-
-
+        } //End of Polygon Arena
 
         break;
       case REULEUX_TRIANGLE :
