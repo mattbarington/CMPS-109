@@ -34,6 +34,10 @@ void Circle::setRadius(double radius) {
     radius_ = radius;
 }
 
+bool Circle::containsPoint(Point2D p) {
+  return Geom::distance(p,this->center_) <= this->radius_;
+}
+
 /*
  * If distance between centers is less than difference between the radius of containing
  * circle and the radius of this circle, this circle is not contained

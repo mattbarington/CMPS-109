@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2018 David C. Harrison. All right reserved.
  *
- * You may not use, distribute, publish, or modify this code without 
+ * You may not use, distribute, publish, or modify this code without
  * the express written permission of the copyright holder.
  */
 
@@ -26,6 +26,7 @@ class Circle : public Containable2D {
 
         double radius();
         void setRadius(double radius);
+        bool containsPoint(Point2D);
 
         bool containedWithin(Circle &circle);
         bool containedWithin(RegularConvexPolygon &polygon);

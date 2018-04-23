@@ -18,7 +18,9 @@ static void success(std::string test, bool expected, bool result) {
 static void circleInCircle() {
   Circle arena = Circle(Point2D(0,0), 8);
   Circle inner = Circle(Point2D(0,0), 4);
-  success("Circle-In-Circle", true, inner.containedWithin(arena));
+  success("Circle-In-Circle-1", true, inner.containedWithin(arena));
+  success("Circle-In-Circle-2",true,inner.containedWithin(inner));
+  success("Circle-In-Circle-3",true,arena.containedWithin(arena));
 }
 
 static void circlePartialInCircle() {
@@ -66,6 +68,7 @@ static void squaresInSquare() {
       success("Squares-In-Squares-2", false, inner.containedWithin(arena));
     }
   }
+  success("Squares-In-Squares-4",true,arena.containedWithin(arena));
 }
 
 static void trianglesInSquare() {
@@ -189,6 +192,16 @@ static void reuleauxInCircle() {
   success("Reuleaux-In-Circle-7",false,inner.containedWithin(arena));
   arena = Circle(Point2D(0,60),64);
   success("Reuleaux-In-Circle-8",true,inner.containedWithin(arena));
+  Point2D points[] = {Point2D(-15,18.928204), Point2D(-9,90464102),Point2D(-21,9.464102)};
+  ReuleauxTriangle newInner(points);
+  arena = Circle(Point2D(0,0),25);
+  success("Reuleaux-In-Circle-9", false, newInner.containedWithin(arena));
+  arena = Circle(Point2D(20,-20),35);
+  success("Reuleaux-In-Circle-10", true, inner.containedWithin(arena));
+  arena = Circle(Point2D(20,-20),34.5);
+  success("Reuleaux-In-Circle-11", false, inner.containedWithin(arena));
+
+
 }
 
 static void reuleauxInSquare() {
@@ -203,6 +216,22 @@ static void reuleauxInSquare() {
   arena = RegularConvexPolygon(std::vector<Point2D> {
     Point2D(-7,-2.5), Point2D(-7,11.5), Point2D(7,11.5), Point2D(7,-2.5)});
   success("Reuleaux-In-Square-3",false,inner.containedWithin(arena));
+}
+
+static void reuleauxInReuleaux() {
+  Point2D arenaPoints[] = {Point2D(0,8.046), Point2D(5.8,-2),Point2D(-5.8,-2)};
+  ReuleauxTriangle arena = ReuleauxTriangle(arenaPoints);
+  Point2D innerPoints[] = {Point2D(0,9.411),Point2D(-6.982,-2.682),Point2D(6.982,-2.682)};
+  ReuleauxTriangle inner = ReuleauxTriangle(innerPoints);
+
+  success("Reuleaux-In-Reuleaux-1",false,inner.containedWithin(arena));
+  success("Reuleaux-In-Reuleaux-2",true,arena.containedWithin(inner));
+  success("Reuleaux-In-Reuleaux-3",true,arena.containedWithin(arena));
+  Point2D movedPoints[] = {Point2D(1,9.411),Point2D(-5.982,-2.682),Point2D(7.982,-2.682)};
+  arena = ReuleauxTriangle(movedPoints);
+  success("Reuleaux-In-Reuleaux-4",false,inner.containedWithin(arena));
+  success("Reuleaux-In-Reuleaux-5",false,arena.containedWithin(inner));
+
 }
 
 int main(int argc, char *argv[])
@@ -223,5 +252,6 @@ int main(int argc, char *argv[])
     triangleInReuleaux();
     reuleauxInCircle();
     reuleauxInSquare();
+    reuleauxInReuleaux();
 
 }

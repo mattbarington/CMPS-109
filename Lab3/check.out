@@ -1,6 +1,82 @@
 
-Circle-In-Circle: PASS
+Circle-In-Circle-1: PASS
+Circle-In-Circle-2: PASS
+Circle-In-Circle-3: PASS
 Circle-Partially-In-Circle: PASS
+Circle-Partially-Out-Circle: PASS
+Circle-Out-Circle: PASS
+Triangle-In-Circle-1: PASS
+Squares-In-Squares-1: PASS
+Squares-In-Squares-1: PASS
+Squares-In-Squares-1: PASS
+Squares-In-Squares-1: PASS
+Squares-In-Squares-2: PASS
+Squares-In-Squares-2: PASS
+Squares-In-Squares-2: PASS
+Squares-In-Squares-2: PASS
+Squares-In-Squares-4: FAIL
+Triangles-in-Squares-1: PASS
+Triangles-in-Squares-1: PASS
+Triangles-in-Squares-1: PASS
+Triangles-in-Squares-1: PASS
+Square-Bigger-Than-Square: PASS
+circles-In-Rectangle-1: PASS
+circles-In-Rectangle-1: PASS
+circles-In-Rectangle-1: PASS
+circles-In-Rectangle-1: PASS
+circles-In-Rectangle-1: PASS
+circles-In-Rectangle-1: PASS
+circles-In-Rectangle-1: PASS
+circles-In-Rectangle-1: PASS
+circles-In-Rectangle-2: PASS
+circles-In-Rectangle-2: PASS
+circles-In-Rectangle-2: PASS
+circles-In-Rectangle-2: PASS
+circles-In-Rectangle-2: PASS
+circles-In-Rectangle-2: PASS
+circles-In-Rectangle-2: PASS
+circles-In-Rectangle-2: PASS
+Circles-Partially-In-Rectanlge-1: PASS
+Circles-Partially-In-Rectanlge-2: PASS
+Circles-Partially-In-Rectanlge-3: PASS
+Circles-Partially-In-Rectanlge-4: PASS
+Circles-Out-Of-Octagon-1: PASS
+Circles-Out-Of-Octagon-2: PASS
+Circles-Out-Of-Octagon-3: PASS
+Circles-Out-Of-Octagon-4: PASS
+Circle-In-Reuleaux-1: PASS
+Circle-In-Reuleaux-2: PASS
+Circle-In-Reuleaux-3: PASS
+Circle-In-Reuleaux-4: PASS
+Square-In-Reuleaux-1: PASS
+Square-In-Reuleaux-2: PASS
+Square-In-Reuleaux-3: PASS
+Triangle-In-Reuleaux-1: PASS
+Triangle-In-Reuleaux-2: PASS
+Triangle-In-Reuleaux-3: PASS
+Triangle-In-Reuleaux-4: PASS
+Reuleaux-In-Circle-1: PASS
+Reuleaux-In-Circle-2: PASS
+Reuleaux-In-Circle-3: PASS
+Reuleaux-In-Circle-4: PASS
+Reuleaux-In-Circle-5: PASS
+Reuleaux-In-Circle-6: PASS
+Reuleaux-In-Circle-7: PASS
+Reuleaux-In-Circle-8: PASS
+Reuleaux-In-Circle-9: PASS
+Reuleaux-In-Circle-10: PASS
+Reuleaux-In-Circle-11: PASS
+Reuleaux-In-Square-1: PASS
+Reuleaux-In-Square-2: PASS
+Reuleaux-In-Square-3: PASS
+12.8004 is greater than 11.6001
+Reuleaux-In-Reuleaux-1: PASS
+Reuleaux-In-Reuleaux-2: PASS
+Reuleaux-In-Reuleaux-3: PASS
+14.4898 is greater than 13.9638
+Reuleaux-In-Reuleaux-4: PASS
+14.4898 is greater than 13.9638
+Reuleaux-In-Reuleaux-5: PASS
 
-               Tests:    2/  2   100.0%
+               Tests:   74/ 75    98.0%
 

@@ -21,13 +21,13 @@ class Circle;
 class ReuleauxTriangle : public Containable2D {
     private:
         Point2D* vertices_;
-
     public:
         ReuleauxTriangle(Point2D vertices[3]);
 
         Point2D* vertices();
         float sideLength(){ return Geom::distance(vertices_[0],vertices_[1]);}
-
+        bool containsPoint(Point2D);
+        
         bool containedWithin(Circle &circle);
         bool containedWithin(RegularConvexPolygon &polygon);
         bool containedWithin(ReuleauxTriangle &rt);

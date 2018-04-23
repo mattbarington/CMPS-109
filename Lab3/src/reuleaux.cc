@@ -18,34 +18,46 @@ Point2D* ReuleauxTriangle::vertices() {
   return vertices_;
 }
 
-/*
- * All vertices of the reuleaux triangle must be contained within the circle.
- * If the curvature of the triangle is smaller than the curvature of the
- * containing circle, then
- */
-bool ReuleauxTriangle::containedWithin(Circle &circle) {
-  //bool withinSideLength = true;
-  for (int i = 0; i < 3; i++) {
-    if (Geom::distance(circle.center(), vertices_[i]) > circle.radius()) {
-       printf("Distance from p: (%f,%f) <-> c: (%f,%f) > r:%f\n",vertices_[i].x,vertices_[i].y,
-                   circle.center().x,circle.center().y,circle.radius());
+bool ReuleauxTriangle::containsPoint(Point2D p) {
+  for (int i = 0; i < 3; i++) {                   //for floating point inprecision
+    if (Geom::distance(p, vertices_[i]) > sideLength() + 0.000001)
       return false;
-    }
   }
-    if (sideLength() < circle.radius()) {
-      for (int i = 0; i < 3; i++) {
-        if (sideLength() + Geom::distance(circle.center(), vertices_[i]) < circle.radius()) {
-          std::cout<<"GETTIN ON OUTTA HERE. PEEYEW\n";
-          return true;
-        }
-      }
-      std::cout << "Not a single thingy is true?\n";
-      return false;
-    }
-  std::cout<<"We're returning here then??\n";
   return true;
 }
 
+/*
+ * All vertices of the reuleaux triangle must be contained within the circle.
+ * If the curvature of the triangle is smaller than the curvature of the
+ * containing circle AND the center of the circle is outside the triangle
+ * then there must be at least one of the reueaux triangle circles must be
+ * fully enclosed within the arena circle.
+ */
+bool ReuleauxTriangle::containedWithin(Circle &circle) {
+  for (int i = 0; i < 3; i++) {
+    if (!circle.containsPoint(vertices_[i])) {
+      return false;
+    }
+  }
+  if (sideLength() < circle.radius() && !this->containsPoint(circle.center())) {
+    for (int i = 0; i < 3; i++) {
+      if (Geom::distance(circle.center(), vertices_[i]) + sideLength() <= circle.radius())
+        return true;
+    }
+    return false;
+  } else {
+    return true;
+  }
+}
+
+/*
+ * There is expected to be no more than two intersections between an arena edge
+ * and a circle of the reuleaux triangle. If an arena edge intersected with
+ * more that two, three, reuleaux circles, the edge would be on the inside
+ * of the reuleaux triangle, and the triangle would resultingly not be
+ * contained.
+ * TL:DR; 3 intersections = not contained.
+ */
 bool ReuleauxTriangle::containedWithin(RegularConvexPolygon &polygon) {
   int intersections = 0;
   float radius = sideLength();
@@ -68,17 +80,12 @@ bool ReuleauxTriangle::containedWithin(RegularConvexPolygon &polygon) {
 /*
  * A reuleaux triangle is contained within another reuleaux triangle if all
  * vertices of the inner triangle are within a side's length from each arena
- * vertex
+ * vertex.
  */
 bool ReuleauxTriangle::containedWithin(ReuleauxTriangle &rt) {
-  float sideLength = rt.sideLength();
   for (int i = 0; i < 3; i++) {
-    for (int j = 0; j < 3; j++) {
-      if (Geom::distance(this->vertices_[i],rt.vertices()[i]) > sideLength) {
-        return false;
-      }
-    }
-    return true;
+    if (!rt.containsPoint(this->vertices_[i]))
+      return false;
   }
-  throw "Not Implemented";
+  return true;
 }

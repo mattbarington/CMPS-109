@@ -49,7 +49,7 @@ float RegularConvexPolygon::maxXCoordinate() {
  */
 bool RegularConvexPolygon::containedWithin(Circle &circle) {
     for (Point2D p : vertices_) {
-      if (Geom::distance(p, circle.center()) > circle.radius())
+      if (!circle.containsPoint(p))
         return false;
     }
     return true;
@@ -77,10 +77,9 @@ bool RegularConvexPolygon::containedWithin(RegularConvexPolygon &polygon) {
  * if not, it cannot be contained
  */
 bool RegularConvexPolygon::containedWithin(ReuleauxTriangle &rt) {
-    float sideLength = rt.sideLength();
     for (int i = 0; i < 3; i++) {
       for (Point2D p : this->vertices()) {
-        if (Geom::distance(p,rt.vertices()[i]) > sideLength)
+        if (!rt.containsPoint(p))
           return false;
       }
     }
