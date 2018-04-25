@@ -1,0 +1,8 @@
+#inner innerargs outer outerags name
+Circle 3,3 4 Circle 0,0 10 true offcenter circle in center circle
+
+#blah de blah blah blach
+
+Circle -2,-2 10 Circle 0,0 10 false offcenter overlap center circle
+
+Circle 0,0 9 Circle 5,5 16 true center circle in offcenter circle

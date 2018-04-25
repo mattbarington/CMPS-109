@@ -1,0 +1,14 @@
+########################################################################
+#
+# Copyright (C) 2018 David C. Harrison. All right reserved.
+#
+# You may not use, distribute, publish, or modify this code without 
+# the express written permission of the copyright holder.
+#
+########################################################################
+
+# 8x8 square centered on the origin IS contained by a circle of radius 8 centered on the origin
+RegularConvexPolygon –4,-4 -4,4 4,4 4,-4 Circle 0,0 8 true square inside circle
+
+# Circle of radius 4 centered at 3,3 IS NOT contained within an 8x8 square centered on the origin.
+Circle 3,3 4 RegularConvexPolygon –4,-4 -4,4 4,4 4,-4 false circle intersects square
