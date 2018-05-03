@@ -28,18 +28,22 @@ static void test(std::string test, bool expected, bool result) {
 
 /*
  * Extracts doubles from string formatted "double,double"
- * Source: https://stackoverflow.com/posts/10861816/revisions
+ * Source: David Harrison, CMPS109 --UCSC--
+ * Secret Sauce, Slide 34,
+ * https://classes.soe.ucsc.edu/cmps109/Spring18/SECURE/8.MultiThreaded2.pdf
  */
 static Point2D parsePoint2D(string &str) {
-  std::vector<string> result;
-  std::stringstream ss(str);
-  while( ss.good() ) {
-    string substr;
-    getline( ss, substr, ',' );
-    result.push_back( substr );
+  double x,y;
+  std::stringstream vstream(str);
+  std::string value;
+  if (std::getline(vstream, value, ',')) {
+    std::stringstream(value) >> x;
+    if (std::getline(vstream, value, ',')) {
+      std::stringstream(value) >> y;
+      return Point2D(x,y);
+    }
   }
-  Point2D p(std::stod(result[0]),std::stod(result[1]));
-  return p;
+throw "invalid point " + str;
 }
 
 static Point3D parsePoint3D(string &str) {
@@ -50,8 +54,12 @@ static Point3D parsePoint3D(string &str) {
     getline( ss, substr, ',' );
     result.push_back( substr );
   }
-  Point3D p(std::stod(result[0]),std::stod(result[1]),std::stod(result[2]));
-  return p;
+  try {
+    Point3D p(std::stod(result[0]),std::stod(result[1]),std::stod(result[2]));
+    return p;
+  } catch (const std::invalid_argument &e) {
+    throw "Failed to Parse Point3D: invalid stod conversion";
+  }
 }
 
 static Circle* parseCircle(std::stringstream &stream) {
@@ -70,13 +78,13 @@ static ReuleauxTriangle* parseReuleauxTriangle(std::stringstream &stream) {
     stream >> point;
     points[i] = parsePoint2D(point);
     #ifdef DEBUG
-    std::cerr << point << " same as ";
-    std::cerr << points[i].x << " , " << points[i].y << std::endl;
+    cout << point << " same as ";
+    cout << points[i].x << " , " << points[i].y << std::endl;
     #endif
   }
   ReuleauxTriangle* rt = new ReuleauxTriangle(points);
   #ifdef DEBUG
-    std::cerr << "Just to double check.. here are all of the rt verts\n";
+    cout << "Just to double check.. here are all of the rt verts\n";
     for (int i = 0; i < 3; i++) {
         cout << rt->vertices()[i].toString();
     }
@@ -86,6 +94,36 @@ static ReuleauxTriangle* parseReuleauxTriangle(std::stringstream &stream) {
   return rt;
 }
 
+static RegularConvexPolygon* parsePolygon(std::stringstream &stream) {
+  #ifdef DEBUG
+  cout << "Entering parsePolygon" << std::endl;
+  #endif
+  string point;
+  std::vector<Point2D> points;
+  while (stream >> point) {
+    if (isalpha(point[0])) {
+      #ifdef DEBUG
+      cout << "Putting back " << point;
+      #endif
+      stream.seekg(-point.length(),stream.cur);
+      break;
+    }
+    #ifdef DEBUG
+    cout << "Point just read: " << point << std::endl;
+    #endif
+    points.push_back(parsePoint2D(point));
+  }
+  RegularConvexPolygon* poly = new RegularConvexPolygon(points);
+  #ifdef DEBUG
+  cout << "RegularConvexPolygon P: ";
+  for (Point2D p : poly->vertices()) {
+    cout << p.toString() << " ";
+  }
+  cout << std::endl;
+  #endif
+  return poly;
+}
+
 static Sphere* parseSphere(std::stringstream &stream) {
   string point, radius;
   stream >> point >> radius;
@@ -93,57 +131,62 @@ static Sphere* parseSphere(std::stringstream &stream) {
   double r = std::stod(radius);
   Sphere* s =  new Sphere(p,r);
   return s;
-
 }
-//
-// static string circleArena(Circle* arena, Containable2D* inner) {
-//   Circle* c = dynamic_cast<Circle*> (inner);
-//   ReuleauxTriangle* rt = dynamic_cast<Circle*> (inner);
-//   RegularConvexPolygon* p = dynamic_cast<RegularConvexPolygon*> (inner);
-//   if (c) {
-//     #ifdef DEBUG
-//     cout << "We have got an inner circle, folks! : ";
-//     cout << c->center().toString() << " w/ radius " << c->radius() << std::endl;
-//     #endif
-//
-//   } else if (rt) {
-//
-//   } else if (p) {
-//
-//   } else {
-//     throw "Something is wrong. No 2D inner shape is matched";
-//   }
-// }
-//
-// static string reuleauxTriangleArena(ReuleauxTriangle* arena, Containable2D* inner) {
-//   Circle* c = dynamic_cast<Circle*> (inner);
-//   ReuleauxTriangle* rt = dynamic_cast<Circle*> (inner);
-//   RegularConvexPolygon* p = dynamic_cast<RegularConvexPolygon*> (inner);
-//   if (c) {
-//
-//   } else if (rt) {
-//
-//   } else if (p) {
-//
-//   } else {
-//     throw "Something is wrong. No 2D inner shape is matched";
-//   }
-// }
-//
-// static string RegularConvexPolygonArena(RegularConvexPolygon* arena, Containable2D* inner) {
-//   Circle* c = dynamic_cast<Circle*> (inner);
-//   ReuleauxTriangle* rt = dynamic_cast<Circle*> (inner);
-//   RegularConvexPolygon* p = dynamic_cast<RegularConvexPolygon*> (inner);
-//   if (c) {
-//
-//   } else if (rt) {
-//
-//   } else if (p) {
-//
-//   } else {
-//     throw "Something is wrong. No 2D inner shape is matched";
-//   }
-// }
+
+static ReuleauxTetrahedron* parseTetrahedron(std::stringstream &stream) {
+  string point;
+  Point3D points[4];
+  for (int i = 0; i < 4; i++) {
+    stream >> point;
+    points[i] = parsePoint3D(point);
+    #ifdef DEBUG
+    cout << "Converted : " << points[i].toString() << std::endl;
+    #endif
+  }
+  ReuleauxTetrahedron* rt = new ReuleauxTetrahedron(points);
+  #ifdef DEBUG
+    cout << "Just to double check.. here are all of the rt verts\n";
+    for (int i = 0; i < 4; i++) {
+        cout << rt->vertices()[i].toString();
+    }
+    cout << "\nHow'd they come out?\n";
+  #endif
+  return rt;
+}
+
+static Cube* parseCube(std::stringstream &stream) {
+  string point;
+  Point3D upper[4];
+  Point3D lower[4];
+  for (int i = 0; i < 8; i++) {
+    stream >> point;
+    if (i < 4) {
+      upper[i] = parsePoint3D(point);
+      #ifdef DEBUG
+      cout << "Converted: " << upper.toString() << std::endl;
+      #endif
+    } else {
+      lower[i - 4] = parsePoint3D(point);
+      #ifdef DEBUG
+      cout << "Converted: " << lower.toString() << std::endl;
+      #endif
+    }
+  }
+
+  Cube* c = new Cube(upper,lower);
+  #ifdef DEBUG
+  cout << "Just to double check... here are all of the verts:\n";
+  cout << "Upper: ";
+  for (int i = 0; i < 4; i++) {
+    cout << c->upperVerts()[i].toString() << " ";
+  }
+  cout << "\nLower: ";
+  for (int i = 0; i < 4; i++) {
+    cout << c->lowerVerts()[i].toString() << " ";
+   }
+  #endif
+  return c;
+}
 
 static void parse2D(string &line) {
   std::stringstream stream(line);
@@ -155,8 +198,10 @@ static void parse2D(string &line) {
       shapes.push_back(parseCircle(stream));
     else if (str == "ReuleauxTriangle")
       shapes.push_back(parseReuleauxTriangle(stream));
-    // else
-    //   shapes.push_back(parsePolygon(stream));
+    else if (str == "RegularConvexPolygon")
+      shapes.push_back(parsePolygon(stream));
+    else
+      throw "Unidentifiable 2D Shape";
   }
 
   Circle* ci = dynamic_cast<Circle*> (shapes[0]);
@@ -172,88 +217,16 @@ static void parse2D(string &line) {
   bool expected = str == "true";
   string testName;
   while (stream >> str) { testName += str + " ";}
-  //
-  // if (ci) {
-  //   #ifdef DEBUG
-  //   cout << "We have got an inner circle, folks! : ";
-  //   cout << c->center().toString() << " w/ radius " << c->radius() << std::endl;
-  //   #endif
-  //   if (co) {
-  //     #ifdef DEBUG
-  //     cout << "We have got an outer circle, folks! : ";
-  //     cout << ci->center().toString() << " w/ radius " << ci->radius() << std::endl;
-  //     #endif
-  //     test(testName, expected, ci->containedWithin(*co));
-  //   } else if (rto) {
-  //     #ifdef DEBUG
-  //       cout << "We have got an outer reuleauxTriangle, folks!\n";
-  //       for (int i = 0; i < 3; i++) {
-  //         cout << rti->vertices()[i].toString() << " ";
-  //       }
-  //       cout << std::endl;
-  //     #endif
-  //     test(testName, expected, ci->containedWithin(*rto));
-  //   } else if (po) {
-  //     throw "po Note yet implemented";
-  //   } else {
-  //     throw "Something is wrong. No outer 2D shape is matched";
-  //   }
-  // } else if (rti) {
-  //   #ifdef DEBUG
-  //     cout << "We have got an inner reuleauxTriangle, folks!\n";
-  //     for (int i = 0; i < 3; i++) {
-  //       cout << rti->vertices()[i].toString() << " ";
-  //     }
-  //     cout << std::endl;
-  //   #endif
-  //   if (co) {
-  //     #ifdef DEBUG
-  //     cout << "We have got an outer circle, folks! : ";
-  //     cout << co->center().toString() << " w/ radius " << co->radius() << std::endl;
-  //     #endif
-  //     test(testName, expected, rti->containedWithin(*co));
-  //   } else if (rto) {
-  //     #ifdef DEBUG
-  //       cout << "We have got an outer reuleauxTriangle, folks!\n";
-  //       for (int i = 0; i < 3; i++) {
-  //         cout << rto->vertices()[i].toString() << " ";
-  //       }
-  //       cout << std::endl;
-  //     #endif
-  //     test(testName, expected, ci->containedWithin(*rto));
-  //   } else if (po) {
-  //     throw "po Note yet implemented";
-  //   } else {
-  //     throw "Something is wrong. No outer 2D shape is matched";
-  //   }
-  // } else if (pi) {
-  //   throw "pi Not yet implemented";
-  //   if (co) {
-  //     #ifdef DEBUG
-  //     cout << "We have got an inner circle, folks! : ";
-  //     cout << ci->center().toString() << " w/ radius " << ci->radius() << std::endl;
-  //     #endif
-  //   } else if (rto) {
-  //     throw "rto Note yet implemented";
-  //   } else if (po) {
-  //     throw "po Note yet implemented";
-  //   } else {
-  //     throw "Something is wrong. No outer 2D shape is matched";
-  //   }
-  // } else {
-  //   throw "Something is wrong. No 2D inner shape is matched";
-  // }
-  //
 
   if (co) {
     #ifdef DEBUG
     cout << "We have got an outer circle, folks! : ";
-    cout << ci->center().toString() << " w/ radius " << ci->radius() << std::endl;
+    cout << co->center().toString() << " w/ radius " << co->radius() << std::endl;
     #endif
     if (ci) {
       #ifdef DEBUG
       cout << "We have got an inner circle, folks! : ";
-      cout << c->center().toString() << " w/ radius " << c->radius() << std::endl;
+      cout << ci->center().toString() << " w/ radius " << ci->radius() << std::endl;
       #endif
       test(testName, expected, ci->containedWithin(*co));
     } else if (rti) {
@@ -266,12 +239,14 @@ static void parse2D(string &line) {
       #endif
       test(testName, expected, rti->containedWithin(*co));
     } else if (pi) {
-
-
-      throw "Polygon in Circle Not Implemented";
-
-
-
+      #ifdef DEBUG
+      cout << "We Have got an inner polygon, folk! : ";
+      for (Point p : pi->vertices()) {
+        cout << p.toString() << " ";
+      }
+      cout << std::endl;
+      #endif
+      test(testName, expected, pi->containedWithin(*co));
     } else {
       throw "Something is wrong. No 2D inner shape is matched";
     }
@@ -280,14 +255,14 @@ static void parse2D(string &line) {
     #ifdef DEBUG
       cout << "We have got an outer reuleauxTriangle, folks!\n";
       for (int i = 0; i < 3; i++) {
-        cout << rti->vertices()[i].toString() << " ";
+        cout << rto->vertices()[i].toString() << " ";
       }
       cout << std::endl;
     #endif
     if (ci) {
       #ifdef DEBUG
       cout << "We have got an inner circle, folks! : ";
-      cout << c->center().toString() << " w/ radius " << c->radius() << std::endl;
+      cout << ci->center().toString() << " w/ radius " << ci->radius() << std::endl;
       #endif
       test(testName, expected, ci->containedWithin(*rto));
     } else if (rti) {
@@ -300,50 +275,58 @@ static void parse2D(string &line) {
       #endif
       test(testName, expected, rti->containedWithin(*rto));
     } else if (pi) {
-
-
-      throw "polygon in ReuleauxTriangle not implemented";
-
-
-
+      #ifdef DEBUG
+      cout << "We Have got an inner polygon, folk! : ";
+      for (Point p : pi->vertices()) {
+        cout << p.toString() << " ";
+      }
+      cout << std::endl;
+      #endif
+      test(testName,expected, pi->containedWithin(*rto));
     } else {
       throw "Something is wrong. No 2D inner shape is matched";
     }
   } else if (po) {
+      #ifdef DEBUG
+      cout << "We Have got an outer polygon, folk! : ";
+      for (Point p : po->vertices()) {
+        cout << p.toString() << " ";
+      }
+      cout << std::endl;
+      #endif
     if (ci) {
-
-
-
-      throw "Circle inside of Polygon Not Implemented";
-
-
-
+      #ifdef DEBUG
+      cout << "We have got an inner circle, folks! : ";
+      cout << ci->center().toString() << " w/ radius " << ci->radius() << std::endl;
+      #endif
+      test(testName, expected, ci->containedWithin(*po));
     } else if (rti) {
-
-
-
-
-      throw "ReuleauxTriangle inside of Polygon Not Implemented";
-
-
-
+      #ifdef DEBUG
+        cout << "We have got an inner reuleauxTriangle, folks!\n";
+        for (int i = 0; i < 3; i++) {
+          cout << rti->vertices()[i].toString() << " ";
+        }
+        cout << std::endl;
+      #endif
+      test(testName, expected, rti->containedWithin(*po));
     } else if (pi) {
-
-
-      throw "Polygon inside of Polygon Not Implemented";
-
-
+      #ifdef DEBUG
+      cout << "We Have got an inner polygon, folk! : ";
+      for (Point p : pi->vertices()) {
+        cout << p.toString() << " ";
+      }
+      cout << std::endl;
+      #endif
+      test(testName, expected, pi->containedWithin(*po));
     } else {
       throw "Something is wrong. No 2D inner shape is matched";
     }
   } else {
     throw "Something is wrong. No 2D inner shape is matched";
   }
-
-
   //parse<Shape> allocates memory, which is stored in the shapes vector;
   //here we deallocate the memory, and all dangling pointers fall out of scope.
-  for (int i = 0; i < shapes.size(); i++) {
+  for (unsigned int i = 0; i < shapes.size(); i++) {
     free(shapes[i]);
   }
 }
@@ -356,10 +339,22 @@ static void parse3D(string &line) {
     stream >> str;
     if (str == "Sphere")
       shapes.push_back(parseSphere(stream));
+    else if (str == "Cube")
+      shapes.push_back(parseCube(stream));
+    else if (str == "ReuleauxTetrahedron")
+      shapes.push_back(parseTetrahedron(stream));
+    else
+      throw "Unidentifiable 3D shape";
   }
+
   Sphere* si = dynamic_cast<Sphere*> (shapes[0]);
   Sphere* so = dynamic_cast<Sphere*> (shapes[1]);
 
+  ReuleauxTetrahedron* rti = dynamic_cast<ReuleauxTetrahedron*> (shapes[0]);
+  ReuleauxTetrahedron* rto = dynamic_cast<ReuleauxTetrahedron*> (shapes[1]);
+
+  Cube* ci = dynamic_cast<Cube*> (shapes[0]);
+  Cube* co = dynamic_cast<Cube*> (shapes[1]);
 
 
   stream >> str;
@@ -369,20 +364,108 @@ static void parse3D(string &line) {
     testName += str + " ";
   }
 
-  if (si) {
+  if (so) {
     #ifdef DEBUG
-    cout << "We've got an inner sphere, folks : ";
-    cout << si->center().toString() << " radius: " << si->radius() << std::endl;
+    cout << "We've got an outer sphere, folks : ";
+    cout << so->center().toString() << " radius: " << so->radius() << std::endl;
     #endif
-    if (so) {
+    if (si) {
       #ifdef DEBUG
-      cout << "We've got an outer sphere, folks : ";
-      cout << so->center().toString() << " radius: " << so->radius() << std::endl;
+      cout << "We've got an inner sphere, folks : ";
+      cout << si->center().toString() << " radius: " << si->radius() << std::endl;
       #endif
-      bool contained = si->containedWithin(*so);
-      cout << testName;
-      cout << (contained == expected ? " : PASS\n" : " : FAIL\n");
+      test(testName, expected, si->containedWithin(*so));
+    } else if (ci) {
+      #ifdef DEBUG
+      cout << "We've got an inner Cube, Folks! : ";
+      for (int i =0; i < 4; i++) {
+        cout << ci->upperVerts()[i].toString() << " " << ci->lowerVerts()[i].toString() << " ";
+      }
+      #endif
+      test(testName, expected, ci->containedWithin(*so));
+    } else if (rti) {
+      #ifdef DEBUG
+      cout << "We've got an inner tetrahedron! : ";
+      for (int i = 0; i < 4; i++) {
+        cout << rti->vertices()[i].toString() << " ";
+      }
+      cout << std::endl;
+      #endif
+      test(testName, expected, rti->containedWithin(*so));
+    } else {
+      throw "Unrecognized Shape for dynamic cast";
     }
+  } else if (co) {
+    #ifdef DEBUG
+    cout << "We've got an outer Cube, Folks! : ";
+    for (int i =0; i < 4; i++) {
+      cout << co->upperVerts()[i].toString() << " " << co->lowerVerts()[i].toString() << " ";
+    }
+    #endif
+    if (si) {
+      #ifdef DEBUG
+      cout << "We've got an inner sphere, folks : ";
+      cout << si->center().toString() << " radius: " << si->radius() << std::endl;
+      #endif
+      test(testName, expected, si->containedWithin(*co));
+    } else if (ci) {
+      #ifdef DEBUG
+      cout << "We've got an inner Cube, Folks! : ";
+      for (int i =0; i < 4; i++) {
+        cout << ci->upperVerts()[i].toString() << " " << ci->lowerVerts()[i].toString() << " ";
+      }
+      #endif
+      test(testName, expected, ci->containedWithin(*co));
+    } else if (rti) {
+      #ifdef DEBUG
+      cout << "We've got an inner tetrahedron! : ";
+      for (int i = 0; i < 4; i++) {
+        cout << rti->vertices()[i].toString() << " ";
+      }
+      cout << std::endl;
+      #endif
+      test(testName, expected, rti->containedWithin(*co));
+    } else {
+      throw "Unrecognized Shape for dynamic cast";
+    }
+  }
+  else if (rto) {
+    #ifdef DEBUG
+    cout << "We've got an outer tetrahedron! : ";
+    for (int i = 0; i < 4; i++) {
+      cout << rto->vertices()[i].toString() << " ";
+    }
+    cout << std::endl;
+    #endif
+    if (si) {
+      #ifdef DEBUG
+      cout << "We've got an inner sphere : ";
+      cout << sphere->center().toSting() << " radius: " << sphere.radius() << std::endl;
+      #endif
+      test(testName, expected, si->containedWithin(*rto));
+    } else if (ci) {
+      #ifdef DEBUG
+      cout << "We've got an inner Cube, Folks! : ";
+      for (int i =0; i < 4; i++) {
+        cout << ci->upperVerts()[i].toString() << " " << ci->lowerVerts()[i].toString() << " ";
+      }
+      #endif
+      test(testName, expected, ci->containedWithin(*rto));
+    } else if (rti) {
+      #ifdef DEBUG
+      cout << "We've got an inner tetrahedron! : ";
+      for (int i = 0; i < 4; i++) {
+        cout << rti->vertices()[i].toString() << " ";
+      }
+      cout << std::endl;
+      #endif
+      test(testName, expected, rti->containedWithin(*rto));
+    } else {
+      throw "Unrecognized Shape for dynamic cast";
+    }
+  }
+  for (unsigned int i = 0; i < shapes.size(); i++) {
+    free(shapes[i]);
   }
 }
 
@@ -415,7 +498,6 @@ int main(int argc, char *argv[] ){
         return -1;
     }
 
-  //  std::cout << "Test file: " << argv[1] << std::endl;
     std::string line;
     std::ifstream fin(argv[1]);
     if (!fin) {
@@ -425,7 +507,11 @@ int main(int argc, char *argv[] ){
     }
     while (getline(fin,line)) {
       if (! (line == "" || line[0] == '#'))
-        parse(line);
+        try {
+          parse(line);
+        } catch (const char* e) {
+          fprintf(stderr, "Failed to Parse: %s\n", e);
+        }
     }
     return 0;
 }

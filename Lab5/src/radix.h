@@ -18,6 +18,7 @@ private:
     void msd(std::vector<unsigned int> &arr);
     static unsigned int maxLengthInt(const std::vector<unsigned int> &arr);
     static void printall(std::vector<unsigned int> & arr);
+    const int CORES;
 public:
     /*
      * Create a multi-threaded RadiX Sort restricted to using no more than

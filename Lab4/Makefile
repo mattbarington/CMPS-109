@@ -29,4 +29,4 @@ clean:
 	@rm -f bounds make.out
 
 submit: clean comply
-	@tar czvf ~/CMPS109-Lab3.tar.gz --exclude include/containable.h src/*.cc include/*.h 
+	@tar czvf ~/CMPS109-Lab4.tar.gz --exclude include/containable.h src/*.cc include/*.h 

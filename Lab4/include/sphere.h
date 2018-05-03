@@ -19,14 +19,15 @@ class Sphere : public Containable3D {
         double radius_;
 
     public:
-        Sphere(const Point3D &center, double radius);
+        //Sphere(Point3D &center, double radius);
+        Sphere(Point3D center, double radius);
 
         Point3D center();
         void setCenter(const Point3D &center);
 
         double radius();
         void setRadius(double radius);
-        bool containsPoint(Point3D);
+        bool containsPoint(const Point3D&);
 
         bool containedWithin(Sphere &sphere);
         bool containedWithin(Cube &cube);

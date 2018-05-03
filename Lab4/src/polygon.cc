@@ -77,11 +77,9 @@ bool RegularConvexPolygon::containedWithin(RegularConvexPolygon &polygon) {
  * if not, it cannot be contained
  */
 bool RegularConvexPolygon::containedWithin(ReuleauxTriangle &rt) {
-    for (int i = 0; i < 3; i++) {
-      for (Point2D p : this->vertices()) {
-        if (!rt.containsPoint(p))
-          return false;
-      }
-    }
-    return true;
+    for (Point2D p : this->vertices()) {
+      if (!rt.containsPoint(p))
+        return false;
+  }
+  return true;
 }

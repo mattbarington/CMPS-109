@@ -192,7 +192,7 @@ static void reuleauxInCircle() {
   success("Reuleaux-In-Circle-7",false,inner.containedWithin(arena));
   arena = Circle(Point2D(0,60),64);
   success("Reuleaux-In-Circle-8",true,inner.containedWithin(arena));
-  Point2D points[] = {Point2D(-15,18.928204), Point2D(-9,90464102),Point2D(-21,9.464102)};
+  Point2D points[] = {Point2D(-15,18.928204), Point2D(-9,9.464102),Point2D(-21,9.464102)};
   ReuleauxTriangle newInner(points);
   arena = Circle(Point2D(0,0),25);
   success("Reuleaux-In-Circle-9", false, newInner.containedWithin(arena));

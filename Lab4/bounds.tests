@@ -12,3 +12,164 @@ RegularConvexPolygon –4,-4 -4,4 4,4 4,-4 Circle 0,0 8 true square inside circl
 
 # Circle of radius 4 centered at 3,3 IS NOT contained within an 8x8 square centered on the origin.
 Circle 3,3 4 RegularConvexPolygon –4,-4 -4,4 4,4 4,-4 false circle intersects square
+
+#inner innerargs outer outerags name
+Circle 3,3 4 Circle 0,0 10 true offcenter circle in center circle
+Circle 0,0 4 Circle 0,0 8 true center circle in center circle
+Circle 0,4.001 4 Circle 0,0 8 false circle partially in circle
+Circle 10,10 3 Circle 0,0 8 false circle partially out of circle
+Circle 0,0 8 Circle 13,13 4 false circle out of circle
+
+
+#blah de blah blah blach
+
+Circle -2,-2 10 Circle 0,0 10 false offcenter overlap center circle
+
+Circle 0,0 9 Circle 5,5 16 false center circle overlap offcenter circle
+Circle 0,0 9 Circle 5,5 17 true center circle in offcenter circle
+Circle 0,3 10 Circle 1,1 4 false arena fully in circle
+Circle 5,4 10 Circle 3,6 8 false arena partially in circle
+
+ReuleauxTriangle -15,18.928204 -9,9.9464102 -21,9.9464102 Circle 0,0 27 true rt fully in circle
+ReuleauxTriangle -15,18.928204 -9,9.9464102 -21,9.9464102 Circle 0,0 5 false rt barely scrapes circle
+
+ReuleauxTriangle 0,8.046 5.8,-2 -5.8,-2 Circle 0,0 100 true  Reuleaux-In-Circle-1
+ReuleauxTriangle 0,8.046 5.8,-2 -5.8,-2 Circle 0,0 12 true  Reuleaux-In-Circle-2
+ReuleauxTriangle 0,8.046 5.8,-2 -5.8,-2 Circle 0,8 18 true  Reuleaux-In-Circle-3
+ReuleauxTriangle 0,8.046 5.8,-2 -5.8,-2 Circle 8,8 10 false Reuleaux-In-Circle-4
+ReuleauxTriangle 0,8.046 5.8,-2 -5.8,-2 Circle 2,0 1  false Reuleaux-In-Circle-5
+ReuleauxTriangle 0,8.046 5.8,-2 -5.8,-2 Circle 0,2 7.2 true Reuleaux-In-Circle-6
+ReuleauxTriangle 0,8.046 5.8,-2 -5.8,-2 Circle 0,14 17.2 false Reuleaux-In-Circle-7
+ReuleauxTriangle 0,8.046 5.8,-2 -5.8,-2 Circle 0,60 64 true Reuleaux-In-Circle-8
+ReuleauxTriangle -15,18.928204 -9,9.9464102 -21,9.9464102 Circle 0,0 25 true Reuleaux-In-Circle-9
+ReuleauxTriangle -15,18.928204 -9,9.9464102 -21,9.9464102 Circle 20,-20 35 false Reuleaux-In-Circle-10
+ReuleauxTriangle -15,18.928204 -9,9.9464102 -21,9.9464102 Circle 20,-20 34.5 false Reuleaux-In-Circle-11
+ReuleauxTriangle -15,18.928204 -9,9.9464102 -21,9.9464102 Circle 5,3 27 true Reuleaux-In-Circle-12
+ReuleauxTriangle -15,18.928204 -9,9.9464102 -21,9.9464102 Circle 5,3 27 true Reuleaux-In-Circle-13
+ReuleauxTriangle -15,18.928204 -9,9.9464102 -21,9.9464102 Circle 5,3 26.6 false Reuleaux-In-Circle-14
+ReuleauxTriangle 0,8.046 5.8,-2 -5.8,-2 Circle 0,2 7.0 false Reuleaux-In-Circle-15
+ReuleauxTriangle 0,8.046 5.8,-2 -5.8,-2 Circle 0,14 17.6 true Reuleaux-In-Circle-16
+ReuleauxTriangle 0,8.046 5.8,-2 -5.8,-2 Circle 0,14 17.5 false Reuleaux-In-Circle-17
+ReuleauxTriangle 0,8.046 5.8,-2 -5.8,-2 Circle 5,3 12 true Reuleaux-In-Circle-18
+ReuleauxTriangle 0,8.046 5.8,-2 -5.8,-2 Circle 5,3 13 true Reuleaux-In-Circle-19
+ReuleauxTriangle 0,8.046 5.8,-2 -5.8,-2 Circle 5,3 16.6 true Reuleaux-In-Circle-20
+ReuleauxTriangle 0,8.046 5.8,-2 -5.8,-2 Circle 20,20 40 true Reuleaux-In-Circle-21
+
+RegularConvexPolygon -5,-5 0,5 5,-5 Circle 1,2 120 true Triangle-In-Circle-1
+RegularConvexPolygon -2,6 14,6 6,-12 Circle 5.8,-2 11.6 true Triangle-In-Circle-2
+#RegularConvexPolygon , -2,-2 -4,-3 -3,-4 Circle 5.8,-2 11.6 true Triangle-In-Circle-error
+RegularConvexPolygon -3,6 14,6 6,-12 Circle 5.8,-2 11.6 false Triangle-In-Circle-3
+RegularConvexPolygon -20,60 20,34 18,-12 Circle 5.8,-2 11.6 false Triangle-In-Circle-4
+RegularConvexPolygon -2,6 16.17,3.16 6,-12 Circle 5.8,-2 11.6 true Triangle-In-Circle-5
+RegularConvexPolygon -2,6 16.19,3.162 6,-12 Circle 5.8,-2 11.6 false Triangle-In-Circle-6
+RegularConvexPolygon -2,-2 -4,-3 -3,-4 Circle 5.8,-2 11.6 true Triangle-In-Circle-7
+
+RegularConvexPolygon 550,450 455,519 491,631 609,631 645,519  Circle 500,530 160  true Pentagon-In-Circle-1
+RegularConvexPolygon 550,450 455,519 491,631 609,631 645,519 Circle 400,535 300 true Pentagon-In-Circle-2
+RegularConvexPolygon 550,450 455,519 491,631 609,631 645,519  Circle 500,530 148  false Pentagon-In-Circle-3
+Sphere 0,0,0 9 Cube -10,10,10 10,10,10 10,-10,10 -10,-10,10 -10,10,-10 10,10,-10 10,-10,-10 -10,-10,-10 true Sphere-In-Cube-1
+Sphere 0,0,0 10 Cube -10,10,10 10,10,10 10,-10,10 -10,-10,10 -10,10,-10 10,10,-10 10,-10,-10 -10,-10,-10 true Sphere-In-Cube-2
+Sphere 0,0,0 10.01 Cube -10,10,10 10,10,10 10,-10,10 -10,-10,10 -10,10,-10 10,10,-10 10,-10,-10 -10,-10,-10 false Sphere-In-Cube-3
+Sphere 20,20,20 4 Cube -10,10,10 10,10,10 10,-10,10 -10,-10,10 -10,10,-10 10,10,-10 10,-10,-10 -10,-10,-10 false Sphere-In-Cube-4
+Sphere 8,8,8 2 Cube -10,10,10 10,10,10 10,-10,10 -10,-10,10 -10,10,-10 10,10,-10 10,-10,-10 -10,-10,-10 true Sphere-In-Cube-5
+Sphere 8,8,8 2.01 Cube -10,10,10 10,10,10 10,-10,10 -10,-10,10 -10,10,-10 10,10,-10 10,-10,-10 -10,-10,-10 false Sphere-In-Cube-6
+Sphere 11,0,0 0.9 Cube -10,10,10 10,10,10 10,-10,10 -10,-10,10 -10,10,-10 10,10,-10 10,-10,-10 -10,-10,-10 false Sphere-In-Cube-7
+Sphere 11,11,11 45 Cube -10,10,10 10,10,10 10,-10,10 -10,-10,10 -10,10,-10 10,10,-10 10,-10,-10 -10,-10,-10 false Sphere-In-Cube-8
+
+
+ReuleauxTetrahedron 0,8.046,0 -5.8,-2,0,0 5.8,-2,0 0,1.3486,3.34863 Cube -10,10,10 10,10,10 10,-10,10 -10,-10,10 -10,10,-10 10,10,-10 10,-10,-10 -10,-10,-10 true Tetra-In-Cube-1
+ReuleauxTetrahedron 0,8.046,0 -5.8,-2,0,0 5.8,-2,0 0,1.3486,3.34863 Cube -6,-3,-10 -6,10,-10 6,10,-10 6,-3,-10 -6,-3,10 -6,10,10 6,10,10 6,-3,10 false Tetra-In-Cube-2
+
+Cube -10,10,10 10,10,10 10,-10,10 -10,-10,10 -10,10,-10 10,10,-10 10,-10,-10 -10,-10,-10 Cube -10,10,10 10,10,10 10,-10,10 -10,-10,10 -10,10,-10 10,10,-10 10,-10,-10 -10,-10,-10 true Cube-In-Cube-1
+Cube -11,11,11 11,11,11 11,-11,11 -11,-11,11 -11,11,-11 11,11,-11 11,-11,-11 -11,-11,-11 Cube -10,10,10 10,10,10 10,-10,10 -10,-10,10 -10,10,-10 10,10,-10 10,-10,-10 -10,-10,-10 false Cube-In-Cube-2
+Cube -10,10,10 10,10,10 10,-10,10 -10,-10,10 -10,10,-10 10,10,-10 10,-10,-10 -10,-10,-10 Cube -11,11,11 11,11,11 11,-11,11 -11,-11,11 -11,11,-11 11,11,-11 11,-11,-11 -11,-11,-11  true Cube-In-Cube-3
+Cube -11,11,11 11,11,11 11,-11,11 -11,-11,11 -11,11,-11 11,11,-11 11,-11,-11 -11,-11,-11 Cube -10,11,11 10,11,11 10,-11,11 -10,-11,11 -10,11,-11 10,11,-11 10,-11,-11 -10,-11,-11 false Cube-In-Cube-4
+Circle -15,-5 5 RegularConvexPolygon -21,11 21,11 21,-11 -21,-11 true Circles-In-Rectangle-1
+Circle -15,-5 5 RegularConvexPolygon -21,11 21,11 21,-11 -21,-11 true Circles-In-Rectangle-2
+Circle -5,-5 5 RegularConvexPolygon -21,11 21,11 21,-11 -21,-11 true Circles-In-Rectangle-3
+Circle -5,5 5 RegularConvexPolygon -21,11 21,11 21,-11 -21,-11 true Circles-In-Rectangle-4
+Circle 5,-5 5 RegularConvexPolygon -21,11 21,11 21,-11 -21,-11 true Circles-In-Rectangle-5
+Circle 5,5 5 RegularConvexPolygon -21,11 21,11 21,-11 -21,-11 true Circles-In-Rectangle-6
+Circle 15,-5 5 RegularConvexPolygon -21,11 21,11 21,-11 -21,-11 true Circles-In-Rectangle-7
+Circle 15,5 5 RegularConvexPolygon -21,11 21,11 21,-11 -21,-11 true Circles-In-Rectangle-8
+
+Circle -15,-5 5 RegularConvexPolygon -20,10 20,10 20,-10 -20,-10 true Circles-In-Rectangle-9
+Circle -15,-5 5 RegularConvexPolygon -20,10 20,10 20,-10 -20,-10 true Circles-In-Rectangle-10
+Circle -5,-5 5 RegularConvexPolygon -20,10 20,10 20,-10 -20,-10 true Circles-In-Rectangle-11
+Circle -5,5 5 RegularConvexPolygon -20,10 20,10 20,-10 -20,-10 true Circles-In-Rectangle-12
+Circle 5,-5 5 RegularConvexPolygon -20,10 20,10 20,-10 -20,-10 true Circles-In-Rectangle-13
+Circle 5,5 5  RegularConvexPolygon -20,10 20,10 20,-10 -20,-10 true Circles-In-Rectangle-14
+Circle 15,-5 5 RegularConvexPolygon -20,10 20,10 20,-10 -20,-10 true Circles-In-Rectangle-15
+Circle 15,5 5 RegularConvexPolygon -20,10 20,10 20,-10 -20,-10 true Circles-In-Rectangle-16
+
+Circle 16,4 4.01 RegularConvexPolygon -20,10 20,10 20,-10 -20,-10 false Circle-Partially-In-Rect-1
+Circle -16,4 4.01 RegularConvexPolygon -20,10 20,10 20,-10 -20,-10 false Circle-Partially-In-Rect-2
+Circle -16,-4 4.01 RegularConvexPolygon -20,10 20,10 20,-10 -20,-10 false Circle-Partially-In-Rect-3
+Circle 16,-4 4.01 RegularConvexPolygon -20,10 20,10 20,-10 -20,-10 false Circle-Partially-In-Rect-4
+
+Circle 10,10 7 RegularConvexPolygon -2,4 2,4 4,2 4,-2 2,-4 -2,-4 -4,-2 -4,2 false Circle-Out-of-Octagon-1
+Circle -10,10 7 RegularConvexPolygon -2,4 2,4 4,2 4,-2 2,-4 -2,-4 -4,-2 -4,2 false Circle-Out-of-Octagon-2
+Circle 10,-10 7 RegularConvexPolygon -2,4 2,4 4,2 4,-2 2,-4 -2,-4 -4,-2 -4,2 false Circle-Out-of-Octagon-3
+Circle -10,-10 7 RegularConvexPolygon -2,4 2,4 4,2 4,-2 2,-4 -2,-4 -4,-2 -4,2 false Circle-Out-of-Octagon-4
+
+Circle 550,550 75 RegularConvexPolygon 550,450 455,519 491,631 609,631 645,519 true Circle-In-Pentagon-1
+Circle 550,550 84 RegularConvexPolygon 550,450 455,519 491,631 609,631 645,519 false Circle-In-Pentagon-2
+Circle 545,545 84 RegularConvexPolygon 550,450 455,519 491,631 609,631 645,519 false Circle-In-Pentagon-3
+Circle 500,545 33 RegularConvexPolygon 550,450 455,519 491,631 609,631 645,519 true Circle-In-Pentagon-4
+Circle 500,545 34.7 RegularConvexPolygon 550,450 455,519 491,631 609,631 645,519 true Circle-In-Pentagon-5
+Circle 500,545 35 RegularConvexPolygon 550,450 455,519 491,631 609,631 645,519 false Circle-In-Pentagon-6
+Circle 500,530 160 RegularConvexPolygon 550,450 455,519 491,631 609,631 645,519 false Circle-In-Pentagon-7
+Circle 400,535 20 RegularConvexPolygon 550,450 455,519 491,631 609,631 645,519 false Circle-In-Pentagon-8
+
+ReuleauxTriangle -0,8.046 5.8,-2 -5.8,2 RegularConvexPolygon -8,10 8,10 8,-6 -8,-6 true Reuleaux-In-Square-1
+ReuleauxTriangle -0,8.046 5.8,-2 -5.8,2 RegularConvexPolygon -6,6 6,6 6,-6 -6,-6 false Reuleaux-In-Square-2
+ReuleauxTriangle -0,8.046 5.8,-2 -5.8,2 RegularConvexPolygon -7,-2.5 -7,11.5 7,11.5 7,-2.5 false Reuleaux-In-Square-3
+Sphere 0,0,0 1 ReuleauxTetrahedron 0,8.046,0 -5.8,-2,0 5.8,-2,0 0,1.3486,3.34863 true Sphere-In-Tetrahedron-1
+Sphere 0,0,0 1.38 ReuleauxTetrahedron 0,8.046,0 -5.8,-2,0 5.8,-2,0 0,1.3486,3.34863 true Sphere-In-Tetrahedron-2
+Sphere 0,0,0 1.42 ReuleauxTetrahedron 0,8.046,0 -5.8,-2,0 5.8,-2,0 0,1.3486,3.34863 true Sphere-In-Tetrahedron-3
+Sphere 0,0,0 1.5 ReuleauxTetrahedron 0,8.046,0 -5.8,-2,0 5.8,-2,0 0,1.3486,3.34863 true Sphere-In-Tetrahedron-4
+Sphere 0,0,2 3 ReuleauxTetrahedron 0,8.046,0 -5.8,-2,0 5.8,-2,0 0,1.3486,3.34863 true Sphere-In-Tetrahedron-5
+Sphere 0,0,0 3.5 ReuleauxTetrahedron 0,8.046,0 -5.8,-2,0 5.8,-2,0 0,1.3486,3.34863 true Sphere-In-Tetrahedron-6
+Sphere 0,1.3486,0 4.8 ReuleauxTetrahedron 0,8.046,0 -5.8,-2,0 5.8,-2,0 0,1.3486,3.34863 true Sphere-In-Tetrahedron-7
+Sphere 0,1.3486,0 5.01 ReuleauxTetrahedron 0,8.046,0 -5.8,-2,0 5.8,-2,0 0,1.3486,3.34863 false Sphere-In-Tetrahedron-8
+
+Cube -1,1,1 1,1,1 1,-1,1 -1,-1,1 -1,1,-1 1,1,-1 1,-1,-1 -1,-1,-1 ReuleauxTetrahedron 0,8.046,0 -5.8,-2,0 5.8,-2,0 0,1.3486,3.34863 true Cube-In-Tetrahedron-1
+Cube -3,3,3 3,3,3 3,-3,3 -3,-3,3 -3,3,-3 3,3,-3 3,-3,-3 -3,-3,-3 ReuleauxTetrahedron 0,8.046,0 -5.8,-2,0 5.8,-2,0 0,1.3486,3.34863 false Cube-In-Tetrahedron-2
+Cube 7,3,3 13,3,3 13,-3,3 7,-3,3 10,3,-3 13,3,-3 13,-3,-3 7,-3,-3 ReuleauxTetrahedron 0,8.046,0 -5.8,-2,0 5.8,-2,0 0,1.3486,3.34863 false Cube-In-Tetrahedron-3
+Cube -10,1,1 -8,1,1 -8,-1,1 -10,-1,1 -10,1,-1 -8,1,-1 -8,-1,-1 -10,-1,-1 ReuleauxTetrahedron 0,8.046,0 -5.8,-2,0 5.8,-2,0 0,1.3486,3.34863 false Cube-In-Tetrahedron-4
+
+ReuleauxTetrahedron 0,8.046,0 -5.8,-2,0 5.8,-2,0 0,1.3486,3.34863 ReuleauxTetrahedron 0,8.046,0 -5.8,-2,0 5.8,-2,0 0,1.3486,3.34863 true Tetrahedron-In-Self-1
+ReuleauxTetrahedron 1,8.046,0 -4.8,-2,0 6.8,-2,0 1,1.3486,3.34863 ReuleauxTetrahedron 0,8.046,0 -5.8,-2,0 5.8,-2,0 0,1.3486,3.34863 false Tetrahedron-In-Self-2
+ReuleauxTetrahedron 0,7.046,0 -5.7,-2,0 5.7,-2,0 0,1.1486,3.34863 ReuleauxTetrahedron 0,8.046,0 -5.8,-2,0 5.8,-2,0 0,1.3486,3.34863 true Tetrahedron-In-Self-3
+Circle 0,0 5 ReuleauxTriangle 0,8 -7.6193,-7.6193 7.6193,-7.6193 true Circle-In-Reuleaux-1
+Circle 0,0 7 ReuleauxTriangle 0,8 -7.6193,-7.6193 7.6193,-7.6193 false Circle-In-Reuleaux-2
+Circle 4,0 3 ReuleauxTriangle 0,8 -7.6193,-7.6193 7.6193,-7.6193 true Circle-In-Reuleaux-3
+Circle 0,7 1 ReuleauxTriangle 0,8 -7.6193,-7.6193 7.6193,-7.6193 false Circle-In-Reuleaux-4
+
+ReuleauxTriangle 0,9.411 -6.982,-2.682 6.982,-2.682 ReuleauxTriangle 0,8.046 5.8,-2 -5.8,-2 false Reuleaux-In-Reuleaux-1
+ReuleauxTriangle 0,8.046 5.8,-2 -5.8,-2 ReuleauxTriangle 0,9.411 -6.982,-2.682 6.982,-2.682 true Reuleaux-In-Reuleaux-2
+ReuleauxTriangle 0,9.411 -6.982,-2.682 6.982,-2.682 ReuleauxTriangle 0,9.411 -6.982,-2.682 6.982,-2.682 true Reuleaux-In-Reuleaux-3
+ReuleauxTriangle 0,8.046 5.8,-2 -5.8,-2 ReuleauxTriangle 0,8.046 5.8,-2 -5.8,-2 true Reuleaux-In-Reuleaux-4
+ReuleauxTriangle 0,9.411 -6.982,-2.682 6.982,-2.682 ReuleauxTriangle 1,9.411 -5.982,-2.682 7.982,-2.682 false Reuleaux-In-Reuleaux-5
+ReuleauxTriangle 1,9.411 -5.982,-2.682 7.982,-2.682 ReuleauxTriangle 0,9.411 -6.982,-2.682 6.982,-2.682 false Reuleaux-In-Reuleaux-6
+Sphere 0,0,0 10 Sphere 0,0,0 11 true centered sphere inside of centered sphere
+Sphere 1,4,2 3 Sphere 5,5,4 20 true offcenter sphere inside of offcenter sphere
+
+# blah balh de blasksk
+Sphere 1,2,3 4 Sphere 1,2,3 4 true same sphere - 1
+Sphere 0,0,0 200 Sphere 0,0,0 200 true same sphere - 2
+Sphere -4,-3,-2 1 Sphere -4,-3,-2 1 true same sphere - 3
+Sphere -9,8,-7 19 Sphere -9,8,-7 19 true same sphere - 4
+
+Sphere 5,2.3,4.9 17 Sphere 0,0,9 19 false sphere partially in sphere
+
+Cube -4,4,4 4,4,4 4,-4,4 -4,-4,4 -4,4,-4 4,4,-4 4,-4,-4 -4,-4,-4 Sphere 0,0,0 20 true Cube-In-Sphere-1
+Cube -4,4,4 4,4,4 4,-4,4 -4,-4,4 -4,4,-4 4,4,-4 4,-4,-4 -4,-4,-4 Sphere 0,0,0 5 false Cube-In-Sphere-2
+Cube -4,4,4 4,4,4 4,-4,4 -4,-4,4 -4,4,-4 4,4,-4 4,-4,-4 -4,-4,-4 Sphere 0,0,0 4.20 false Cube-In-Sphere-3
+Cube -4,4,4 4,4,4 4,-4,4 -4,-4,4 -4,4,-4 4,4,-4 4,-4,-4 -4,-4,-4 Sphere 0,0,0 6.9 false Cube-In-Sphere-4
+Cube -4,4,4 4,4,4 4,-4,4 -4,-4,4 -4,4,-4 4,4,-4 4,-4,-4 -4,-4,-4 Sphere 0,0,0 6.95 true Cube-In-Sphere-5
+Cube -4,4,4 4,4,4 4,-4,4 -4,-4,4 -4,4,-4 4,4,-4 4,-4,-4 -4,-4,-4 Sphere 3,-3,3 12 false Cube-In-Sphere-6
+Cube -4,4,4 4,4,4 4,-4,4 -4,-4,4 -4,4,-4 4,4,-4 4,-4,-4 -4,-4,-4 Sphere 3,-3,3 12.2 true Cube-In-Sphere-5
+
+ReuleauxTetrahedron 0,8.046,0 -5.8,-2,0 5.8,-2,0 0,1.3486,3.34863 Sphere 0,0,0 12 true Tetrahedron-In-Sphere-1
+ReuleauxTetrahedron 0,8.046,0 -5.8,-2,0 5.8,-2,0 0,1.3486,3.34863 Sphere 0,0,0 6 false Tetrahedron-In-Sphere-2

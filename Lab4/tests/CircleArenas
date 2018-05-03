@@ -1,8 +1,54 @@
 #inner innerargs outer outerags name
 Circle 3,3 4 Circle 0,0 10 true offcenter circle in center circle
+Circle 0,0 4 Circle 0,0 8 true center circle in center circle
+Circle 0,4.001 4 Circle 0,0 8 false circle partially in circle
+Circle 10,10 3 Circle 0,0 8 false circle partially out of circle
+Circle 0,0 8 Circle 13,13 4 false circle out of circle
+
 
 #blah de blah blah blach
 
 Circle -2,-2 10 Circle 0,0 10 false offcenter overlap center circle
 
-Circle 0,0 9 Circle 5,5 16 true center circle in offcenter circle
+Circle 0,0 9 Circle 5,5 16 false center circle overlap offcenter circle
+Circle 0,0 9 Circle 5,5 17 true center circle in offcenter circle
+Circle 0,3 10 Circle 1,1 4 false arena fully in circle
+Circle 5,4 10 Circle 3,6 8 false arena partially in circle
+
+ReuleauxTriangle -15,18.928204 -9,9.9464102 -21,9.9464102 Circle 0,0 27 true rt fully in circle
+ReuleauxTriangle -15,18.928204 -9,9.9464102 -21,9.9464102 Circle 0,0 5 false rt barely scrapes circle
+
+ReuleauxTriangle 0,8.046 5.8,-2 -5.8,-2 Circle 0,0 100 true  Reuleaux-In-Circle-1
+ReuleauxTriangle 0,8.046 5.8,-2 -5.8,-2 Circle 0,0 12 true  Reuleaux-In-Circle-2
+ReuleauxTriangle 0,8.046 5.8,-2 -5.8,-2 Circle 0,8 18 true  Reuleaux-In-Circle-3
+ReuleauxTriangle 0,8.046 5.8,-2 -5.8,-2 Circle 8,8 10 false Reuleaux-In-Circle-4
+ReuleauxTriangle 0,8.046 5.8,-2 -5.8,-2 Circle 2,0 1  false Reuleaux-In-Circle-5
+ReuleauxTriangle 0,8.046 5.8,-2 -5.8,-2 Circle 0,2 7.2 true Reuleaux-In-Circle-6
+ReuleauxTriangle 0,8.046 5.8,-2 -5.8,-2 Circle 0,14 17.2 false Reuleaux-In-Circle-7
+ReuleauxTriangle 0,8.046 5.8,-2 -5.8,-2 Circle 0,60 64 true Reuleaux-In-Circle-8
+ReuleauxTriangle -15,18.928204 -9,9.9464102 -21,9.9464102 Circle 0,0 25 true Reuleaux-In-Circle-9
+ReuleauxTriangle -15,18.928204 -9,9.9464102 -21,9.9464102 Circle 20,-20 35 false Reuleaux-In-Circle-10
+ReuleauxTriangle -15,18.928204 -9,9.9464102 -21,9.9464102 Circle 20,-20 34.5 false Reuleaux-In-Circle-11
+ReuleauxTriangle -15,18.928204 -9,9.9464102 -21,9.9464102 Circle 5,3 27 true Reuleaux-In-Circle-12
+ReuleauxTriangle -15,18.928204 -9,9.9464102 -21,9.9464102 Circle 5,3 27 true Reuleaux-In-Circle-13
+ReuleauxTriangle -15,18.928204 -9,9.9464102 -21,9.9464102 Circle 5,3 26.6 false Reuleaux-In-Circle-14
+ReuleauxTriangle 0,8.046 5.8,-2 -5.8,-2 Circle 0,2 7.0 false Reuleaux-In-Circle-15
+ReuleauxTriangle 0,8.046 5.8,-2 -5.8,-2 Circle 0,14 17.6 true Reuleaux-In-Circle-16
+ReuleauxTriangle 0,8.046 5.8,-2 -5.8,-2 Circle 0,14 17.5 false Reuleaux-In-Circle-17
+ReuleauxTriangle 0,8.046 5.8,-2 -5.8,-2 Circle 5,3 12 true Reuleaux-In-Circle-18
+ReuleauxTriangle 0,8.046 5.8,-2 -5.8,-2 Circle 5,3 13 true Reuleaux-In-Circle-19
+ReuleauxTriangle 0,8.046 5.8,-2 -5.8,-2 Circle 5,3 16.6 true Reuleaux-In-Circle-20
+ReuleauxTriangle 0,8.046 5.8,-2 -5.8,-2 Circle 20,20 40 true Reuleaux-In-Circle-21
+
+RegularConvexPolygon -5,-5 0,5 5,-5 Circle 1,2 120 true Triangle-In-Circle-1
+RegularConvexPolygon -2,6 14,6 6,-12 Circle 5.8,-2 11.6 true Triangle-In-Circle-2
+#RegularConvexPolygon , -2,-2 -4,-3 -3,-4 Circle 5.8,-2 11.6 true Triangle-In-Circle-error
+RegularConvexPolygon -3,6 14,6 6,-12 Circle 5.8,-2 11.6 false Triangle-In-Circle-3
+RegularConvexPolygon -20,60 20,34 18,-12 Circle 5.8,-2 11.6 false Triangle-In-Circle-4
+RegularConvexPolygon -2,6 16.17,3.16 6,-12 Circle 5.8,-2 11.6 true Triangle-In-Circle-5
+RegularConvexPolygon -2,6 16.19,3.162 6,-12 Circle 5.8,-2 11.6 false Triangle-In-Circle-6
+RegularConvexPolygon -2,-2 -4,-3 -3,-4 Circle 5.8,-2 11.6 true Triangle-In-Circle-7
+
+RegularConvexPolygon 550,450 455,519 491,631 609,631 645,519  Circle 500,530 160  true Pentagon-In-Circle-1
+RegularConvexPolygon 550,450 455,519 491,631 609,631 645,519 Circle 400,535 300 true Pentagon-In-Circle-2
+RegularConvexPolygon 550,450 455,519 491,631 609,631 645,519  Circle 500,530 148  false Pentagon-In-Circle-3

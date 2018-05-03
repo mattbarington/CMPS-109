@@ -1,5 +1,139 @@
 
-Test file: bounds.tests
+square inside circle : PASS
+circle intersects square : PASS
+offcenter circle in center circle : PASS
+center circle in center circle : PASS
+circle partially in circle : PASS
+circle partially out of circle : PASS
+circle out of circle : PASS
+offcenter overlap center circle : PASS
+center circle overlap offcenter circle : PASS
+center circle in offcenter circle : PASS
+arena fully in circle : PASS
+arena partially in circle : PASS
+rt fully in circle : PASS
+rt barely scrapes circle : PASS
+Reuleaux-In-Circle-1 : PASS
+Reuleaux-In-Circle-2 : PASS
+Reuleaux-In-Circle-3 : PASS
+Reuleaux-In-Circle-4 : PASS
+Reuleaux-In-Circle-5 : PASS
+Reuleaux-In-Circle-6 : PASS
+Reuleaux-In-Circle-7 : PASS
+Reuleaux-In-Circle-8 : PASS
+Reuleaux-In-Circle-9 : PASS
+Reuleaux-In-Circle-10 : PASS
+Reuleaux-In-Circle-11 : PASS
+Reuleaux-In-Circle-12 : PASS
+Reuleaux-In-Circle-13 : PASS
+Reuleaux-In-Circle-14 : PASS
+Reuleaux-In-Circle-15 : PASS
+Reuleaux-In-Circle-16 : PASS
+Reuleaux-In-Circle-17 : PASS
+Reuleaux-In-Circle-18 : PASS
+Reuleaux-In-Circle-19 : PASS
+Reuleaux-In-Circle-20 : PASS
+Reuleaux-In-Circle-21 : PASS
+Triangle-In-Circle-1 : PASS
+Triangle-In-Circle-2 : PASS
+Triangle-In-Circle-3 : PASS
+Triangle-In-Circle-4 : PASS
+Triangle-In-Circle-5 : PASS
+Triangle-In-Circle-6 : PASS
+Triangle-In-Circle-7 : PASS
+Pentagon-In-Circle-1 : PASS
+Pentagon-In-Circle-2 : PASS
+Pentagon-In-Circle-3 : PASS
+Sphere-In-Cube-1 : PASS
+Sphere-In-Cube-2 : PASS
+Sphere-In-Cube-3 : PASS
+Sphere-In-Cube-4 : PASS
+Sphere-In-Cube-5 : PASS
+Sphere-In-Cube-6 : PASS
+Sphere-In-Cube-7 : PASS
+Sphere-In-Cube-8 : PASS
+Tetra-In-Cube-1 : PASS
+Tetra-In-Cube-2 : PASS
+Cube-In-Cube-1 : FAIL
+Cube-In-Cube-2 : PASS
+Cube-In-Cube-3 : PASS
+Cube-In-Cube-4 : PASS
+Circles-In-Rectangle-1 : PASS
+Circles-In-Rectangle-2 : PASS
+Circles-In-Rectangle-3 : PASS
+Circles-In-Rectangle-4 : PASS
+Circles-In-Rectangle-5 : PASS
+Circles-In-Rectangle-6 : PASS
+Circles-In-Rectangle-7 : PASS
+Circles-In-Rectangle-8 : PASS
+Circles-In-Rectangle-9 : PASS
+Circles-In-Rectangle-10 : PASS
+Circles-In-Rectangle-11 : PASS
+Circles-In-Rectangle-12 : PASS
+Circles-In-Rectangle-13 : PASS
+Circles-In-Rectangle-14 : PASS
+Circles-In-Rectangle-15 : PASS
+Circles-In-Rectangle-16 : PASS
+Circle-Partially-In-Rect-1 : PASS
+Circle-Partially-In-Rect-2 : PASS
+Circle-Partially-In-Rect-3 : PASS
+Circle-Partially-In-Rect-4 : PASS
+Circle-Out-of-Octagon-1 : PASS
+Circle-Out-of-Octagon-2 : PASS
+Circle-Out-of-Octagon-3 : PASS
+Circle-Out-of-Octagon-4 : PASS
+Circle-In-Pentagon-1 : PASS
+Circle-In-Pentagon-2 : PASS
+Circle-In-Pentagon-3 : PASS
+Circle-In-Pentagon-4 : PASS
+Circle-In-Pentagon-5 : PASS
+Circle-In-Pentagon-6 : PASS
+Circle-In-Pentagon-7 : PASS
+Circle-In-Pentagon-8 : PASS
+Reuleaux-In-Square-1 : PASS
+Reuleaux-In-Square-2 : PASS
+Reuleaux-In-Square-3 : PASS
+Sphere-In-Tetrahedron-1 : PASS
+Sphere-In-Tetrahedron-2 : PASS
+Sphere-In-Tetrahedron-3 : PASS
+Sphere-In-Tetrahedron-4 : PASS
+Sphere-In-Tetrahedron-5 : PASS
+Sphere-In-Tetrahedron-6 : PASS
+Sphere-In-Tetrahedron-7 : PASS
+Sphere-In-Tetrahedron-8 : PASS
+Cube-In-Tetrahedron-1 : PASS
+Cube-In-Tetrahedron-2 : PASS
+Cube-In-Tetrahedron-3 : PASS
+Cube-In-Tetrahedron-4 : PASS
+Tetrahedron-In-Self-1 : PASS
+Tetrahedron-In-Self-2 : PASS
+Tetrahedron-In-Self-3 : PASS
+Circle-In-Reuleaux-1 : PASS
+Circle-In-Reuleaux-2 : PASS
+Circle-In-Reuleaux-3 : PASS
+Circle-In-Reuleaux-4 : PASS
+Reuleaux-In-Reuleaux-1 : PASS
+Reuleaux-In-Reuleaux-2 : PASS
+Reuleaux-In-Reuleaux-3 : PASS
+Reuleaux-In-Reuleaux-4 : PASS
+Reuleaux-In-Reuleaux-5 : PASS
+Reuleaux-In-Reuleaux-6 : PASS
+centered sphere inside of centered sphere : PASS
+offcenter sphere inside of offcenter sphere : PASS
+same sphere - 1 : PASS
+same sphere - 2 : PASS
+same sphere - 3 : PASS
+same sphere - 4 : PASS
+sphere partially in sphere : PASS
+Cube-In-Sphere-1 : PASS
+Cube-In-Sphere-2 : PASS
+Cube-In-Sphere-3 : PASS
+Cube-In-Sphere-4 : PASS
+Cube-In-Sphere-5 : PASS
+Cube-In-Sphere-6 : PASS
+Cube-In-Sphere-5 : PASS
+Tetrahedron-In-Sphere-1 : PASS
+Tetrahedron-In-Sphere-2 : PASS
 
-               Tests:    0/  0     0.0%
+               Tests:  134/135    99.0%
 

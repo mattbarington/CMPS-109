@@ -8,10 +8,17 @@
 #ifndef _POINT_H_
 #define _POINT_H_
 
+#include <string>
+using std::to_string;
+
 class Point2D {
     public:
         double x;
         double y;
+
+        std::string toString() {
+          return "Point2D("+to_string(x)+","+to_string(y)+")";
+        }
 
         // do not change these constructors
         Point2D() { x = 0.0, y = 0.0; }
@@ -22,6 +29,10 @@ class Point2D {
 class Point3D : public Point2D {
     public:
         double z;
+
+        std::string toString() {
+          return "Point2D("+to_string(x)+","+to_string(y)+","+to_string(z)+")";
+        }
 
         // do not change these constructors
         Point3D() : Point2D() { z = 0.0; }

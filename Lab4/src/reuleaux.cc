@@ -10,21 +10,21 @@
 #include "polygon.h"
 #include "reuleauxtriangle.h"
 
-ReuleauxTriangle::ReuleauxTriangle(Point2D* vertices) {
-  Point2D v[4] = {Point2D(0,0),Point2D(0,0),Point2D(0,0),Point2D(0,0)};
-  for (int i = 0; i < 4; i++) {
-    v[i] = vertices[i];
+ReuleauxTriangle::ReuleauxTriangle(Point2D vertices[3]) {
+  for (int i = 0; i < 3; i++) {
+    vertices_[i] = vertices[i];
   }
-  vertices_ = v;
+
+  // vertices_ = vertices;
 }
 
 Point2D* ReuleauxTriangle::vertices() {
   return vertices_;
 }
 
-bool ReuleauxTriangle::containsPoint(Point2D p) {
-  for (int i = 0; i < 3; i++) {                   //for floating point inprecision
-    if (Geom::distance(p, vertices_[i]) > sideLength() + 0.000001)
+bool ReuleauxTriangle::containsPoint(const Point2D &p) {
+  for (int i = 0; i < 3; i++) {                 //for floating point inprecision
+    if (Geom::distance(p, vertices_[i]) > sideLength() + 0.001)
       return false;
   }
   return true;
@@ -43,15 +43,22 @@ bool ReuleauxTriangle::containedWithin(Circle &circle) {
       return false;
     }
   }
-  if (sideLength() < circle.radius() && !this->containsPoint(circle.center())) {
-    for (int i = 0; i < 3; i++) {
-      if (Geom::distance(circle.center(), vertices_[i]) + sideLength() <= circle.radius())
-        return true;
+
+  //if a full rt circle is contained, gotta be contained
+  for (int i = 0; i < 3; i++) {
+    if (Geom::distance(vertices_[i],circle.center()) + sideLength() <= circle.radius()) {
+      return true;
     }
-    return false;
-  } else {
-    return true;
   }
+
+  //if two or three circle contain center point, rt is contained
+  int circs = 0;
+  for (int i = 0; i < 3; i++) {
+    if (Geom::distance(vertices_[i],circle.center()) <= sideLength()) {
+      circs++;
+    }
+  }
+  return circs > 1;
 }
 
 /*
@@ -65,10 +72,9 @@ bool ReuleauxTriangle::containedWithin(Circle &circle) {
 bool ReuleauxTriangle::containedWithin(RegularConvexPolygon &polygon) {
   int intersections = 0;
   float radius = sideLength();
-  Circle sweep = Circle(Point2D(0,0),0);
   for (Line e : polygon.edges()) {
     for (int i = 0; i < 3; i++) {
-      sweep = Circle(vertices_[i],radius);
+      Circle sweep(vertices_[i],radius);
       if (Geom::intersects(e, sweep)) {
         intersections++;
       }
@@ -88,8 +94,9 @@ bool ReuleauxTriangle::containedWithin(RegularConvexPolygon &polygon) {
  */
 bool ReuleauxTriangle::containedWithin(ReuleauxTriangle &rt) {
   for (int i = 0; i < 3; i++) {
-    if (!rt.containsPoint(this->vertices_[i]))
+    if (!rt.containsPoint(this->vertices_[i])) {
       return false;
+    }
   }
   return true;
 }

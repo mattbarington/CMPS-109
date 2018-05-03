@@ -46,16 +46,21 @@ int pop(Stack* S) {
   return temp;
 }
 
+int isEmpty(Stack* S) {
+  if (S == NULL) {printf("Error in isEmpty: NULL Stack reference\n"); return 1;}
+  return !S->top;
+}
+
 int main(int argc, char *argv[]) {
   Stack* S = newStack();
   for (int i = 0; i < 4; i++) {
     push(S, i);
   }
-  printf("Top of stack: %d\n", pop(S));
-  printf("Top of stack: %d\n", pop(S));
-  printf("Top of stack: %d\n", pop(S));
-  printf("Top of stack: %d\n", pop(S));
-  printf("Top of stack: %d\n", pop(S));
+
+  while (!isEmpty(S)) {
+    printf("Top of stack: %d\n", pop(S));
+  }
+
 
   free(S);
   return 0;

@@ -30,19 +30,23 @@ fail=`grep FAIL check.out | wc -l`
 
 pct=`cat check.out | grep 'Tests' | grep '\%' | sed 's/\%//' | awk -F "/" '{print $2}' | awk -F " " '{print $2}'`
 total=`echo "scale=2; $pct * 0.3" | bc -l`
-printf "\n%20s: %4.1f/%2d ( %d tests )\n" "Functional" $total 30 $tests
+printf "\n%20s: %4.1f/%2d ( %2d of %d tests )\n" "Functional" $total 30 $pass $tests
 
-pass=`grep Speedup perf.out | grep PASS | wc -l`
-fail=`grep Speedup perf.out | grep FAIL | wc -l`
+spass=`grep Speedup perf.out | grep PASS | wc -l`
+sfail=`grep Speedup perf.out | grep FAIL | wc -l`
+cpass=`grep Capped perf.out | grep PASS | wc -l`
+cfail=`grep Capped perf.out | grep FAIL | wc -l`
+(( pass = spass + cpass ))
+(( fail = sfail + cfail ))
 (( tests = pass + fail ))
 
 ptotal=0
-if [ $pass -ne 0 ]
+if [ $tests -ne 0 ]
 then
-    ptotal=`echo "scale=2; ($tests / $pass ) * 30.0" | bc -l`
+    ptotal=`echo "scale=2; ($pass / $tests ) * 30.0" | bc -l`
 fi
 
-printf "%20s: %4.1f/%2d ( %2d tests )\n" "Non-Functional" $ptotal 30 $tests
+printf "%20s: %4.1f/%2d ( %2d of %d tests )\n" "Non-Functional" $ptotal 30 $pass $tests
 
 ccode=0
 if [ ! -s make.out ]
@@ -54,3 +58,5 @@ total=`echo "scale=2; $total + $ptotal + $ccode" | bc -l`
 printf "%20s:  %3d/%2d\n" "C++ Code" $ccode 10
 
 printf "\n%20s: %4.1f/70\n\n" "Total" $total 
+
+rm perf.out check.out 2>/dev/null

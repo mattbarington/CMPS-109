@@ -26,6 +26,7 @@ do
         cat radix.tmp.out >> radix.out
     done
 done
+rm radix.tmp.out
 
 pass=`grep PASS radix.out | wc -l`
 fail=`grep FAIL radix.out | wc -l`
@@ -46,3 +47,4 @@ then
     pct=`echo "scale=2; $passes / $tests * 100.0" | bc -l`
 fi
 printf "%20s:  %3d/%3d   %5.1f%%\n\n" "Tests" $passes $tests $pct
+

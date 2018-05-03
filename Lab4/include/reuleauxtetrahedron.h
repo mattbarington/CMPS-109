@@ -16,13 +16,14 @@
 
 class ReuleauxTetrahedron : public Containable3D {
   private:
-    Point3D* vertices_;
+    Point3D vertices_[4];
 
   public:
     ReuleauxTetrahedron(Point3D vertices[4]);
 
-    Point3D* vertices();
+    Point3D* vertices() {return vertices_;};
     float sideLength() {return Geom::distance(vertices_[0],vertices_[1]);}
+    bool containsPoint(const Point3D &p);
 
     bool containedWithin(Sphere &sphere);
     bool containedWithin(Cube &cube);
