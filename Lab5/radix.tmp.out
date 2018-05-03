@@ -1,0 +1,11 @@
+Numbers: 99999 Lists: 4 Cores: 3
+Generating expected results... 
+Generate time: 2.03929 seconds
+Creating RadixSort with 3 cores
+Running RadixSort.msd()... 
+Elapsed time: 0.000000 seconds
+Comparing results... 
+List 0 FAIL
+List 1 FAIL
+List 2 FAIL
+List 3 FAIL

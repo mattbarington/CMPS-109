@@ -1,0 +1,4 @@
+src/radix.cc: In constructor ‘RadixSort::RadixSort(unsigned int)’:
+src/radix.cc:11:9: warning: unused variable ‘ununsed’ [-Wunused-variable]
+     int ununsed = 0; // to fail complier warming test, remove
+         ^
