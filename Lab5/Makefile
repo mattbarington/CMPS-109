@@ -16,15 +16,15 @@ radix: $(SRC) main.o
 	$(CC) -o $@ $^ $(CFLAGS) $(LIBS) 2>&1 | tee make.out
 
 check: radix
-	@./check.sh 99999
+	@./check.sh 999999
 	@echo ""
 
 perf: radix
-	@./perf.sh  99999
+	@./perf.sh  999999
 	@echo ""
 
 grade: clean radix
-	@./grade.sh 99999
+	@./grade.sh 999999
 
 clean:
 	@rm -f radix make.out
