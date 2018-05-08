@@ -1,0 +1,4 @@
+src/radix.cc: In member function ‘void ParallelRadixSort::msd(std::vector<std::reference_wrapper<std::vector<unsigned int> > >&, unsigned int)’:
+src/radix.cc:11:9: warning: unused variable ‘ununsed’ [-Wunused-variable]
+     int ununsed; // to fail compilke warning test, remove
+         ^
