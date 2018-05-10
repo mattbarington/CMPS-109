@@ -21,15 +21,8 @@
  */
 class ParallelRadixSort {
 private:
-  // static void something(int h);
-  // static void nothing();
-  // static void stringy(std::string&);
-  // static void vectStringy(std::vector<std::string>);
-  // static void refvectstring(std::vector<std::string>&);
-  // static void sort(std::vector<std::string>&);
-
-  // static void msd(std::vector<std::string>&);
-  // static void msd(std::vector<std::string>&, unsigned int);
+  sem_t *full;
+  sem_t *available;
 public:
     /*
      * Perform an in-place Most Significant Digit Radix Sort on each list of
