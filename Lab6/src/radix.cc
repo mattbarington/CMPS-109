@@ -10,6 +10,7 @@
 #include <thread>
 #include <semaphore.h>
 #include <atomic>
+#include <fcntl.h>
 #include "radix.h"
 
 using std::vector;
@@ -27,59 +28,59 @@ using std::thread;
 // }
 
 
+//
+// static void sort(vector<string>& list, unsigned int cores) {
+//   vector<vector<string>> buckets(10);
+//   for (string& str : list) {
+//     buckets[ str.at(0) - 48].push_back(str);
+//   }
+//   list.clear();
+//   vector<thread> threads;
+//
+//   //semaphore initialization
+//   sem_t *cores_available = sem_open("cores_available", cores);
+//   //sem_init(cores_available, 0, cores);
+//
+//
+//   for (vector<string>& buck : buckets) {
+//     //sema down
+//     sem_wait(cores_available);
+//     threads.push_back(thread{[&buck,&cores_available] {std::sort(buck.begin(),buck.end());
+//       //semaphore up
+//       sem_post(cores_available);
+//     }});
+//   }
+//   for (thread& t : threads) {
+//     t.join();
+//   }
+//   list.clear();
+//   for (vector<string>& V : buckets) {
+//     for (string& s : V) {
+//       list.push_back(s);
+//     }
+//   }
+// }
+//
+// static void msdInts(vector<unsigned int>& list, unsigned int cores) {
+//   vector<string> to_str;
+//   for (unsigned int i : list) {
+//     to_str.push_back(std::to_string(i));
+//   }
+//   sort(to_str, cores);
+//   list.clear();
+//   for (string& str : to_str) {
+//     list.push_back((unsigned int) std::stoul(str));
+//   }
+// }
 
-static void sort(vector<string>& list, unsigned int cores) {
-  vector<vector<string>> buckets(10);
-  for (string& str : list) {
-    buckets[ str.at(0) - 48].push_back(str);
-  }
-  list.clear();
-  vector<thread> threads;
-
-  //semaphore initialization
-  sem_t *cores_available = sem_open("cores_available", cores);
-  //sem_init(cores_available, 0, cores);
-
-
-  for (vector<string>& buck : buckets) {
-    //sema down
-    sem_wait(cores_available);
-    threads.push_back(thread{[&buck,&cores_available] {std::sort(buck.begin(),buck.end());
-      //semaphore up
-      sem_post(cores_available);
-    }});
-  }
-  for (thread& t : threads) {
-    t.join();
-  }
-  list.clear();
-  for (vector<string>& V : buckets) {
-    for (string& s : V) {
-      list.push_back(s);
-    }
-  }
-}
-
-static void msdInts(vector<unsigned int>& list, unsigned int cores) {
-  vector<string> to_str;
-  for (unsigned int i : list) {
-    to_str.push_back(std::to_string(i));
-  }
-  sort(to_str, cores);
-  list.clear();
-  for (string& str : to_str) {
-    list.push_back((unsigned int) std::stoul(str));
-  }
-}
-
-static void copyTo(vector<unsigned int>& intList, vector<string>& strList) {
+static void translate(vector<unsigned int>& intList, vector<string>& strList) {
   strList.clear();
   for (unsigned int i : intList) {
     strList.push_back(std::to_string(i));
   }
 }
 
-static void copyTo(vector<string>& strList, vector<unsigned int>& intList) {
+static void translate(vector<string>& strList, vector<unsigned int>& intList) {
   intList.clear();
   for (string& s : strList) {
     intList.push_back((unsigned int) std::stoul(s));
@@ -88,45 +89,47 @@ static void copyTo(vector<string>& strList, vector<unsigned int>& intList) {
 
 void ParallelRadixSort::msd(std::vector<std::reference_wrapper<std::vector<unsigned int>>>& lists, unsigned int cores) {
   for (vector<unsigned int>& list : lists) {
+    //create a vector with ints -> strings
     vector<string> to_str;
-    copyTo(list,to_str);
+    translate(list,to_str);
 
+    //separate into 1st digit buckets
     vector<vector<string>> buckets(10);
     for (string& str : to_str) {
       buckets[ str.at(0) - 48].push_back(str);
     }
+    to_str.clear();
 
+    //sort each bucket with an individual thread
     vector<thread> threads;
+    sem_t cores_available;
+    sem_init(&cores_available, 1, cores);
+    std::atomic<int> cores_in_use(0);
     for (vector<string>& buck : buckets) {
-      std::sort(buck.begin(),buck.end());
-      // threads.push_back(thread{[&buck] {std::sort(buck.begin(),buck.end());
-      // }});
+      sem_wait(&cores_available);
+
+
+
+      std::cout << "Cores in use: " << cores_in_use << std::endl;
+      threads.push_back(thread{[&buck,&cores_available,&cores_in_use] {
+        std::sort(buck.begin(),buck.end());
+
+    
+
+        sem_post(&cores_available);
+      }});
     }
     for (thread& t : threads) {
       t.join();
     }
-    to_str.clear();
     for (vector<string>& buck : buckets) {
       for (string& s : buck) {
         to_str.push_back(s);
       }
     }
 
-    copyTo(to_str,list);
-    //
-    // for (unsigned int i : list) {
-    //   std::cout << i << std::endl;
-    // }
-
-    // using semaphores: if semaphore flag is allowing more threads,
-    //  then create another thread.
-    // // threads.push_back(thread{msdInts,std::ref(list)});
-    // msdInts(list, cores);
+    translate(to_str,list);
   }
-  // for (thread& t : threads) {
-  //   t.join();
-  // }
-  // threads.clear();
 }
 //
 //
