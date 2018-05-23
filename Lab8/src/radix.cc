@@ -53,7 +53,8 @@ static void ntohM(Message& m) {
  *  Receives Message from specified sender.
  *  Converts Message parameters from network to host byte order.
  */
-static void recvMessage(Message& m, int sock, sockaddr_in &rem_addr, socklen_t& len) {
+static void recvMessage(Message& m, int sock, sockaddr_in &rem_addr) {
+  socklen_t len = sizeof(rem_addr);
   int n = recvfrom(sock, &m, sizeof(m), 0, (struct sockaddr*) &rem_addr, &len);
   if (n < 0) {
     throw "Unable to Recv";
@@ -65,9 +66,9 @@ static void recvMessage(Message& m, int sock, sockaddr_in &rem_addr, socklen_t& 
  *  Converts Message from host to netork byte order.
  *  Sends Message through specified socket.
  */
-static void sendMessage(Message& m, int sock, sockaddr_in& addr, socklen_t& len) {
+static void sendMessage(Message& m, int sock, sockaddr_in& addr) {
   htonM(m);
-  int n = sendto(sock, &m, sizeof(m), 0, (struct sockaddr*) &addr, len);
+  int n = sendto(sock, &m, sizeof(m), 0, (struct sockaddr*) &addr, sizeof(addr));
   if (n < 0) {
     throw "Unable to Send";
   }
@@ -102,13 +103,13 @@ void RadixServer::start(const int port, const unsigned int cores) {
   }
 
   struct sockaddr_in remote_addr;
-  socklen_t len = sizeof(remote_addr);
+  // socklen_t len = sizeof(remote_addr);
   memset(&remote_addr, 0, sizeof(remote_addr));
   server_is_active = true;
   while (server_is_active) {
 
     Message m;
-    recvMessage(m, sockfd, remote_addr, len);
+    recvMessage(m, sockfd, remote_addr);
     vector<uint> nums;
     for (uint i = 0; i < m.num_values; i++) {
       nums.push_back(m.values[i]);
@@ -119,7 +120,7 @@ void RadixServer::start(const int port, const unsigned int cores) {
     for (uint i = 0; i < nums.size(); i++) {
       m.values[i] = nums[i];
     }
-    sendMessage(m, sockfd, remote_addr, len);
+    sendMessage(m, sockfd, remote_addr);
   }
   close(sockfd);
 
@@ -160,7 +161,7 @@ void RadixClient::msd(const char *hostname, const int port, std::vector<std::ref
   bcopy((char*) server->h_addr, (char*) &remote_addr.sin_addr.s_addr, server->h_length);
   remote_addr.sin_port = htons(port);
 
-  socklen_t len = sizeof(remote_addr);
+  // socklen_t len = sizeof(remote_addr);
 
 for (vector<uint>& list : lists) {
     vector<uint> nums;
@@ -171,7 +172,6 @@ for (vector<uint>& list : lists) {
     std::sort(nums.begin(),nums.end(),[](uint a, uint b) {
       return std::to_string(a).compare(std::to_string(b)) < 0;
     });
-    int n;
     //------------  let's try to send a Message  --------------------------------
     Message m;
     memset(&m, 0, sizeof(m));
@@ -184,7 +184,7 @@ for (vector<uint>& list : lists) {
     }
     // htonM(m);
     try {
-      sendMessage(m, sockfd, remote_addr, len);
+      sendMessage(m, sockfd, remote_addr);
     } catch (const char* e) {
       ExitErr(e, errno, __LINE__);
     }
@@ -196,7 +196,7 @@ for (vector<uint>& list : lists) {
   //---------------  let's receive a messaage  ----------------------------
 
     try {
-      recvMessage(m, sockfd, remote_addr, len);
+      recvMessage(m, sockfd, remote_addr);
     } catch (const char* e) {
       ExitErr(e, errno, __LINE__);
     }
