@@ -25,7 +25,6 @@
 
 using std::vector;
 
-
 static void ExitErr(std::string source, int err, int line) {
   std::cerr << source << ": '" << strerror(err) << "' error on line " << line << std::endl;
   exit(-1);
@@ -74,6 +73,18 @@ static void sendMessage(Message& m, int sock, sockaddr_in& addr) {
   }
 }
 
+static bool vacancies(Message& m) {
+  return m.num_values < MAX_VALUES;
+}
+
+static void pushItRealGood(Message& m, uint i) {
+  if (!vacancies(m)) {
+    throw "No Room In Message";
+  }
+  m.values[m.num_values] = i;
+  m.num_values ++;
+}
+
 /*
  * Start a UDP listener on PORT and accept lists of unsiged integers from
  * clients to be MSD RAdix sorted using no more that CORES cpu cores. After
@@ -114,9 +125,11 @@ void RadixServer::start(const int port, const unsigned int cores) {
     for (uint i = 0; i < m.num_values; i++) {
       nums.push_back(m.values[i]);
     }
+
     std::sort(nums.begin(), nums.end(), [](uint a, uint b) {
       return std::to_string(a).compare(std::to_string(b)) < 0;
     });
+
     for (uint i = 0; i < nums.size(); i++) {
       m.values[i] = nums[i];
     }
@@ -166,45 +179,70 @@ void RadixClient::msd(const char *hostname, const int port, std::vector<std::ref
 for (vector<uint>& list : lists) {
     vector<uint> nums;
     for (uint i : list){
-      // std::cout << i << std::endl;
       nums.push_back(i);
     }
     std::sort(nums.begin(),nums.end(),[](uint a, uint b) {
       return std::to_string(a).compare(std::to_string(b)) < 0;
     });
     //------------  let's try to send a Message  --------------------------------
-    Message m;
+    vector<Message> messages;
+    uint sequence = 0;
+    Message m = Message();
     memset(&m, 0, sizeof(m));
-    m.flag = LAST;
+    m.flag = NONE;
     m.sequence = 0;
     m.num_values = 0;
+    messages.push_back(Message());
+    messages.back().flag = NONE;
+    messages.back().sequence = 0;
+    messages.back().num_values = 0;
+    int index = 0;
     for (uint i : list) {
-      m.values[m.num_values] = i;
-      m.num_values ++;
+      if (vacancies(messages.back())) {
+        pushItRealGood(messages.back(),i);
+        std::cout << "pushed index " << index++ << " to " << messages.size() << "th datagram\n";
+      } else {
+        messages.push_back(Message());
+        sequence++;
+        messages.back().flag = NONE;
+        messages.back().sequence = sequence;
+        messages.back().num_values = 0;
+        pushItRealGood(messages.back(),i);
+        std::cout << "pushed index " << index++ << " to " << messages.size() << "th datagram\n";
+      }
+      // m.values[m.num_values] = i;
+      // m.num_values ++;
     }
-    // htonM(m);
-    try {
-      sendMessage(m, sockfd, remote_addr);
-    } catch (const char* e) {
-      ExitErr(e, errno, __LINE__);
+
+    std::cout << "There are " << messages.size() << " datagrams\n";
+
+    messages.back().flag = LAST;
+    for (Message& message : messages) {
+      try {
+        sendMessage(messages.back(), sockfd, remote_addr);
+      } catch (const char* e) {
+        ExitErr(e, errno, __LINE__);
+      }
+      memset(message.values, 0, sizeof(uint) * MAX_VALUES);
     }
-    for (uint i = 0; i < MAX_VALUES; i++) {
-      m.values[i] = 0;
-    }
+    // for (uint i = 0; i < MAX_VALUES; i++) {
+    //   m.values[i] = 0;
+    // }
    std::cout << "Values array set to 0s. Waiting for recv.......\n";
 
-  //---------------  let's receive a messaage  ----------------------------
-
-    try {
-      recvMessage(m, sockfd, remote_addr);
-    } catch (const char* e) {
-      ExitErr(e, errno, __LINE__);
-    }
-    list.clear();
-    for (uint i = 0; i < m.num_values; i++) {
-      list.push_back(m.values[i]);
-    }
-
+   //---------------  let's receive a messaage  ----------------------------
+   list.clear();
+   do {
+     std::cout << "waiting\n";
+     try {
+       recvMessage(m, sockfd, remote_addr);
+     } catch (const char* e) {
+       ExitErr(e, errno, __LINE__);
+     }
+     for (uint i = 0; i < m.num_values; i++) {
+       list.push_back(m.values[i]);
+      }
+    } while (m.flag != LAST);
   } // for list : lists
   close(sockfd);
 }
