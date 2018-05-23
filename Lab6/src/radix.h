@@ -21,8 +21,7 @@
  */
 class ParallelRadixSort {
 private:
-  sem_t *full;
-  sem_t *available;
+  sem_t *cores_in_use;
 public:
     /*
      * Perform an in-place Most Significant Digit Radix Sort on each list of
