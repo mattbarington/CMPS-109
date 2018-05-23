@@ -35,7 +35,7 @@ static void htonM(Message& m) {
     m.values[i] = htonl(m.values[i]);
   }
   m.sequence = htonl(m.sequence);
-  m.flag = htonl(LAST);
+  m.flag = htonl(m.flag);
   m.num_values = htonl(m.num_values);
 }
 
@@ -66,6 +66,7 @@ static void recvMessage(Message& m, int sock, sockaddr_in &rem_addr) {
  *  Sends Message through specified socket.
  */
 static void sendMessage(Message& m, int sock, sockaddr_in& addr) {
+  std::cout << "sending datagram with flag " << m.flag << std::endl;
   htonM(m);
   int n = sendto(sock, &m, sizeof(m), 0, (struct sockaddr*) &addr, sizeof(addr));
   if (n < 0) {
@@ -188,38 +189,35 @@ for (vector<uint>& list : lists) {
     vector<Message> messages;
     uint sequence = 0;
     Message m = Message();
-    memset(&m, 0, sizeof(m));
-    m.flag = NONE;
-    m.sequence = 0;
-    m.num_values = 0;
+    // memset(&m, 0, sizeof(m));
+    // m.flag = NONE;
+    // m.sequence = 0;
+    // m.num_values = 0;
     messages.push_back(Message());
-    messages.back().flag = NONE;
-    messages.back().sequence = 0;
-    messages.back().num_values = 0;
-    int index = 0;
+    memset(&messages.back(), 0, sizeof(Message));
+    // int index = 0;
     for (uint i : list) {
       if (vacancies(messages.back())) {
         pushItRealGood(messages.back(),i);
-        std::cout << "pushed index " << index++ << " to " << messages.size() << "th datagram\n";
+        // std::cout << "pushed index " << index++ << " to " << messages.size() - 1 << "th datagram\n";
       } else {
         messages.push_back(Message());
         sequence++;
-        messages.back().flag = NONE;
+        memset(&messages.back(), 0, sizeof(Message));
         messages.back().sequence = sequence;
-        messages.back().num_values = 0;
         pushItRealGood(messages.back(),i);
-        std::cout << "pushed index " << index++ << " to " << messages.size() << "th datagram\n";
+        // std::cout << "pushed index " << index++ << " to " << messages.size() - 1 << "th datagram\n";
       }
       // m.values[m.num_values] = i;
       // m.num_values ++;
     }
-
     std::cout << "There are " << messages.size() << " datagrams\n";
-
     messages.back().flag = LAST;
+
     for (Message& message : messages) {
       try {
-        sendMessage(messages.back(), sockfd, remote_addr);
+        // std::cout << "Should send with flag " <<
+        sendMessage(message, sockfd, remote_addr);
       } catch (const char* e) {
         ExitErr(e, errno, __LINE__);
       }
@@ -233,7 +231,6 @@ for (vector<uint>& list : lists) {
    //---------------  let's receive a messaage  ----------------------------
    list.clear();
    do {
-     std::cout << "waiting\n";
      try {
        recvMessage(m, sockfd, remote_addr);
      } catch (const char* e) {
@@ -241,8 +238,8 @@ for (vector<uint>& list : lists) {
      }
      for (uint i = 0; i < m.num_values; i++) {
        list.push_back(m.values[i]);
-      }
-    } while (m.flag != LAST);
+     }
+   } while (m.flag != LAST);
   } // for list : lists
   close(sockfd);
 }

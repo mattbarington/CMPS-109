@@ -7,7 +7,7 @@
 #
 #######################################################################
 
-CFLAGS = -Wall -Isrc -lpthread
+CFLAGS = -Wall -Isrc -lpthread -g
 CC = g++ -std=c++17
 
 SRC=$(wildcard src/*.cc)
