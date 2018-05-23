@@ -66,7 +66,6 @@ static void recvMessage(Message& m, int sock, sockaddr_in &rem_addr) {
  *  Sends Message through specified socket.
  */
 static void sendMessage(Message& m, int sock, sockaddr_in& addr) {
-  std::cout << "sending datagram with flag " << m.flag << std::endl;
   htonM(m);
   int n = sendto(sock, &m, sizeof(m), 0, (struct sockaddr*) &addr, sizeof(addr));
   if (n < 0) {
@@ -84,6 +83,50 @@ static void pushItRealGood(Message& m, uint i) {
   }
   m.values[m.num_values] = i;
   m.num_values ++;
+}
+
+static void sendIntegers(vector<uint>& nums, int sock, sockaddr_in& addr) {
+  vector<Message> messages;
+  uint sequence = 0;
+  messages.push_back(Message());
+  memset(&messages.back(), 0, sizeof(Message));
+
+  for (uint i : nums) {
+    if (vacancies(messages.back())) {
+      pushItRealGood(messages.back(),i);
+    } else {
+      messages.push_back(Message());
+      sequence++;
+      memset(&messages.back(), 0, sizeof(Message));
+      messages.back().sequence = sequence;
+      pushItRealGood(messages.back(),i);
+    }
+  }
+  // last message is the LAST message
+  messages.back().flag = LAST;
+//------------------  Messages away!  -----------------------------------------
+  for (Message& message : messages) {
+    try {
+      sendMessage(message, sock, addr);
+    } catch (const char* e) {
+      ExitErr(e, errno, __LINE__);
+    }
+    memset(&message.values, 0, sizeof(uint) * MAX_VALUES);
+  }
+}
+
+static void recvIntegers(vector<uint>& nums, int sock, sockaddr_in& addr) {
+  Message m;
+  do {
+   try {
+     recvMessage(m, sock, addr);
+   } catch (const char* e) {
+     ExitErr(e, errno, __LINE__);
+   }
+   for (uint i = 0; i < m.num_values; i++) {
+     nums.push_back(m.values[i]);
+   }
+ } while (m.flag != LAST);
 }
 
 /*
@@ -115,26 +158,16 @@ void RadixServer::start(const int port, const unsigned int cores) {
   }
 
   struct sockaddr_in remote_addr;
-  // socklen_t len = sizeof(remote_addr);
+  
   memset(&remote_addr, 0, sizeof(remote_addr));
   server_is_active = true;
   while (server_is_active) {
-
-    Message m;
-    recvMessage(m, sockfd, remote_addr);
     vector<uint> nums;
-    for (uint i = 0; i < m.num_values; i++) {
-      nums.push_back(m.values[i]);
-    }
-
+    recvIntegers(nums, sockfd, remote_addr);
     std::sort(nums.begin(), nums.end(), [](uint a, uint b) {
       return std::to_string(a).compare(std::to_string(b)) < 0;
     });
-
-    for (uint i = 0; i < nums.size(); i++) {
-      m.values[i] = nums[i];
-    }
-    sendMessage(m, sockfd, remote_addr);
+    sendIntegers(nums, sockfd, remote_addr);
   }
   close(sockfd);
 
@@ -175,71 +208,11 @@ void RadixClient::msd(const char *hostname, const int port, std::vector<std::ref
   bcopy((char*) server->h_addr, (char*) &remote_addr.sin_addr.s_addr, server->h_length);
   remote_addr.sin_port = htons(port);
 
-  // socklen_t len = sizeof(remote_addr);
-
-for (vector<uint>& list : lists) {
-    vector<uint> nums;
-    for (uint i : list){
-      nums.push_back(i);
-    }
-    std::sort(nums.begin(),nums.end(),[](uint a, uint b) {
-      return std::to_string(a).compare(std::to_string(b)) < 0;
-    });
-    //------------  let's try to send a Message  --------------------------------
-    vector<Message> messages;
-    uint sequence = 0;
-    Message m = Message();
-    // memset(&m, 0, sizeof(m));
-    // m.flag = NONE;
-    // m.sequence = 0;
-    // m.num_values = 0;
-    messages.push_back(Message());
-    memset(&messages.back(), 0, sizeof(Message));
-    // int index = 0;
-    for (uint i : list) {
-      if (vacancies(messages.back())) {
-        pushItRealGood(messages.back(),i);
-        // std::cout << "pushed index " << index++ << " to " << messages.size() - 1 << "th datagram\n";
-      } else {
-        messages.push_back(Message());
-        sequence++;
-        memset(&messages.back(), 0, sizeof(Message));
-        messages.back().sequence = sequence;
-        pushItRealGood(messages.back(),i);
-        // std::cout << "pushed index " << index++ << " to " << messages.size() - 1 << "th datagram\n";
-      }
-      // m.values[m.num_values] = i;
-      // m.num_values ++;
-    }
-    std::cout << "There are " << messages.size() << " datagrams\n";
-    messages.back().flag = LAST;
-
-    for (Message& message : messages) {
-      try {
-        // std::cout << "Should send with flag " <<
-        sendMessage(message, sockfd, remote_addr);
-      } catch (const char* e) {
-        ExitErr(e, errno, __LINE__);
-      }
-      memset(message.values, 0, sizeof(uint) * MAX_VALUES);
-    }
-    // for (uint i = 0; i < MAX_VALUES; i++) {
-    //   m.values[i] = 0;
-    // }
-   std::cout << "Values array set to 0s. Waiting for recv.......\n";
-
-   //---------------  let's receive a messaage  ----------------------------
-   list.clear();
-   do {
-     try {
-       recvMessage(m, sockfd, remote_addr);
-     } catch (const char* e) {
-       ExitErr(e, errno, __LINE__);
-     }
-     for (uint i = 0; i < m.num_values; i++) {
-       list.push_back(m.values[i]);
-     }
-   } while (m.flag != LAST);
+  for (vector<uint>& list : lists) {
+    sendIntegers(list, sockfd, remote_addr);
+    std::cout << "Values array set to 0s. Waiting for recv.......\n";
+    list.clear();
+    recvIntegers(list, sockfd, remote_addr);
   } // for list : lists
   close(sockfd);
 }
