@@ -57,7 +57,6 @@ static void ntohM(Message& m) {
  *  Converts Message parameters from network to host byte order.
  */
 static void recvMessage(Message& m, int sock, sockaddr_in &rem_addr) {
-  std::cout << "Attempting to recvMessage\n";
   socklen_t len = sizeof(rem_addr);
   int n = recvfrom(sock, &m, sizeof(m), 0, (struct sockaddr*) &rem_addr, &len);
   if (n < 0) {
@@ -72,7 +71,6 @@ static void recvMessage(Message& m, int sock, sockaddr_in &rem_addr) {
  *  Sends Message through specified socket.
  */
 static void sendMessage(Message& m, int sock, sockaddr_in& addr) {
-  std::cout << "Attempting to sendMessage\n";
   htonM(m);
   int n = sendto(sock, &m, sizeof(m), 0, (struct sockaddr*) &addr, sizeof(addr));
   if (n < 0) {
@@ -97,12 +95,27 @@ static void pushItRealGood(Message& m, uint i) {
 static void recvMessages(vector<Message>& messages, int sock, sockaddr_in& addr) {
   vector<Message> buffer;
   Message m;
+  fd_set readfds;
+  struct timeval tv;
+  FD_SET(sock, &readfds);
   do {
     try {
       recvMessage(m, sock, addr);
     } catch (const char* e) {
       ExitErr(e, errno, __LINE__);
     }
+    // FD_SET(sock, &readfds);
+    // tv.tv_sec = 2;
+    // int rc = select(0, &readfds, 0, 0, &tv);
+    // if (rc == 0) {
+    //   std::cout << "Timeout\n";
+    //   continue;
+    // }
+    // if (recv(sock, &m, sizeof(m), 0) < 0) {
+    //   ExitErr("recvMessage", errno, __LINE__);
+    // }
+    // std::cout << "received message with seq: " << m.sequence << std::endl;
+
     if (m.flag == RESEND) {
       for (uint i = 0; i < m.num_values; i++) {
         sendMessage(messages[m.values[i]], sock, addr);
@@ -117,6 +130,7 @@ static void recvMessages(vector<Message>& messages, int sock, sockaddr_in& addr)
     } else {
       buffer.push_back(m);
     }
+
   } while (m.flag == NONE);
 
   std::sort(buffer.begin(), buffer.end(), [] (Message& a, Message& b) {
@@ -306,10 +320,8 @@ void RadixServer::start(const int port, const unsigned int cores) {
   server_is_active = true;
   while (server_is_active) {
     vector<uint> nums;
-    //recvIntegers(nums, sockfd, remote_addr);
-
     vector<Message> buffer;
-
+// ---- recvMessages takes a Message buffer, and stores recved messages in &buffer
     recvMessages(buffer, sockfd, remote_addr);
 
     for (Message& message : buffer) {
@@ -318,10 +330,10 @@ void RadixServer::start(const int port, const unsigned int cores) {
       }
     }
 
-
     std::sort(nums.begin(), nums.end(), [](uint a, uint b) {
       return std::to_string(a).compare(std::to_string(b)) < 0;
     });
+
     sendIntegers(nums, sockfd, remote_addr);
   }
   close(sockfd);
@@ -342,7 +354,6 @@ void RadixServer::stop() {
  */
 void RadixClient::msd(const char *hostname, const int port, std::vector<std::reference_wrapper<std::vector<unsigned int>>> &lists) {
   std::cout << "Launching msd in the client\n";
-
 
   int sockfd = socket(AF_INET, SOCK_DGRAM, 0);
   if (sockfd < 0) {
@@ -388,7 +399,8 @@ void RadixClient::msd(const char *hostname, const int port, std::vector<std::ref
 //------------------  Let's see what we've got!  -------------------------------
 
     std::cout << "Values array set to 0s. Waiting for recv.......\n";
-   recvMessages(messages, sockfd, remote_addr);
+    //recvMessages takes vector of messages, and then stores received messages in &messages
+    recvMessages(messages, sockfd, remote_addr);
     list.clear();
     for (Message& message : messages) {
       for (uint i = 0; i < message.num_values; i++) {
