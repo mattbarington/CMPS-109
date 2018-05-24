@@ -30,6 +30,10 @@ static void ExitErr(std::string source, int err, int line) {
   exit(-1);
 }
 
+static void ExitErr(const char* source, int err, int line) {
+  printf("%s: '%s' error on line %d\n",source, strerror(err), line);
+}
+
 static void htonM(Message& m) {
   for (uint i = 0; i < m.num_values; i++) {
     m.values[i] = htonl(m.values[i]);
@@ -53,9 +57,11 @@ static void ntohM(Message& m) {
  *  Converts Message parameters from network to host byte order.
  */
 static void recvMessage(Message& m, int sock, sockaddr_in &rem_addr) {
+  std::cout << "Attempting to recvMessage\n";
   socklen_t len = sizeof(rem_addr);
   int n = recvfrom(sock, &m, sizeof(m), 0, (struct sockaddr*) &rem_addr, &len);
   if (n < 0) {
+    std::cout << "Unable to recv in recvMessage\n";
     throw "Unable to Recv";
   }
   ntohM(m);
@@ -66,9 +72,11 @@ static void recvMessage(Message& m, int sock, sockaddr_in &rem_addr) {
  *  Sends Message through specified socket.
  */
 static void sendMessage(Message& m, int sock, sockaddr_in& addr) {
+  std::cout << "Attempting to sendMessage\n";
   htonM(m);
   int n = sendto(sock, &m, sizeof(m), 0, (struct sockaddr*) &addr, sizeof(addr));
   if (n < 0) {
+    std::cout << "Unable to send in sendMessage\n";
     throw "Unable to Send";
   }
 }
@@ -79,28 +87,81 @@ static bool vacancies(Message& m) {
 
 static void pushItRealGood(Message& m, uint i) {
   if (!vacancies(m)) {
+    std::cout << "There is no room in here!\n";
     throw "No Room In Message";
   }
   m.values[m.num_values] = i;
   m.num_values ++;
 }
 
-// static void recvMessages(vector<Message>& buffer, int sock, sockaddr_in& addr) {
-//   Message m;
-//   do {
-//     try {
-//       recvMessage(m, sockfd, remote_addr);
-//     } catch (const char* e) {
-//       ExitErr(e, errno, __LINE__);
-//     }
-//     if (m.flag == RESEND) {
-//       sendMessages(messages, sock, addr);
-//       buffer.clear();
-//     } else {
-//       buffer.push_back(m);
-//     }
-//   } while (m.flag == NONE);
-// }
+static void recvMessages(vector<Message>& messages, int sock, sockaddr_in& addr) {
+  vector<Message> buffer;
+  Message m;
+  do {
+    try {
+      recvMessage(m, sock, addr);
+    } catch (const char* e) {
+      ExitErr(e, errno, __LINE__);
+    }
+    if (m.flag == RESEND) {
+      for (uint i = 0; i < m.num_values; i++) {
+        sendMessage(messages[m.values[i]], sock, addr);
+      }
+      m.flag = LAST;
+      m.num_values = 0;
+      m.sequence = 0;
+      sendMessage(m, sock, addr);
+      // sendMessages(messages, sockfd, remote_addr);
+      m.flag = NONE;
+      buffer.clear();
+    } else {
+      buffer.push_back(m);
+    }
+  } while (m.flag == NONE);
+
+  std::sort(buffer.begin(), buffer.end(), [] (Message& a, Message& b) {
+    return a.sequence < b.sequence;
+  });
+
+  uint expt = 0;
+  uint i = 0;
+  vector<uint> missingThings;
+  while (i < buffer.size()) {
+    if (buffer[i].sequence == expt) {
+      i++;
+      expt++;
+    } else {
+      missingThings.push_back(expt++);
+    }
+  }
+
+  if (missingThings.size() > 0) {
+    Message resend;
+    resend.num_values = 0;
+    resend.sequence = 0;
+    resend.flag = RESEND;
+    for (uint missing : missingThings) {
+      pushItRealGood(resend, missing);
+    }
+    sendMessage(resend, sock, addr);
+    do {
+      try {
+        recvMessage(m, sock, addr);
+      } catch (const char* e) {
+        ExitErr(e, errno, __LINE__);
+      }
+      buffer.push_back(m);
+    } while (m.flag == NONE);
+  }
+
+  std::sort(buffer.begin(), buffer.end(), [] (Message& a, Message& b) {
+    return a.sequence < b.sequence;
+  });
+  messages.clear();
+  for (Message& message : buffer) {
+    messages.push_back(message);
+  }
+}
 
 static void sendIntegers(vector<uint>& nums, int sock, sockaddr_in& addr) {
   vector<Message> messages;
@@ -147,17 +208,63 @@ static void sendMessages(vector<Message>& messages, int sock, sockaddr_in& addr)
 
 static void recvIntegers(vector<uint>& nums, int sock, sockaddr_in& addr) {
   Message m;
+  m.sequence = 0;
+  m.num_values = 0;
+  m.flag = LAST;
   vector<Message> buffer;
   do {
    try {
      recvMessage(m, sock, addr);
+     std::cout << "In top recv\n";
    } catch (const char* e) {
      ExitErr(e, errno, __LINE__);
    }
+   std::cout << "Past top recv" << std::endl;
+   if (m.flag == RESEND) {
+     sendIntegers(nums, sock, addr);
+     buffer.clear();
+   }
    buffer.push_back(m);
  } while (m.flag != LAST);
+//-------  check that buffer is not missing any intermediate packets  ---------
+   uint expt = 0;
+   uint i = 0;
+   vector<uint> missingThings;
+   while (i < buffer.size()) {
+     if (buffer[i].sequence == expt) {
+       i++;
+       expt++;
+     } else {
+       missingThings.push_back(expt++);
+     }
+   }
+// -------  send packet with missing sequence numbers, receive just the missing sequence numbers
+   if (missingThings.size() > 0) {
+     std::cout << "Things are missing what is wrong?\n";
+     Message resend;
+     resend.flag = RESEND;
+     resend.num_values = 0;
+     for (uint missing : missingThings) {
+       pushItRealGood(resend, missing);
+     }
+     sendMessage(resend, sock, addr);
+     do {
+       try {
+         recvMessage(m, sock, addr);
+       } catch (const char* e) {
+         ExitErr(e, errno, __LINE__);
+       }
+       std::cout << "Getting back missing things\n";
+       buffer.push_back(m);
+     } while (m.flag == NONE);
+     std::cout << "Sorting uffer into order\n";
+     std::sort(buffer.begin(), buffer.end(), [] (Message& a, Message& b) {
+       return a.sequence < b.sequence;
+     });
+   }
 
  //----------  buffer should contain contiguous sequence numbers  --------------
+ nums.clear();
  for (Message& m : buffer) {
    for (uint i = 0; i < m.num_values; i++) {
      nums.push_back(m.values[i]);
@@ -200,54 +307,10 @@ void RadixServer::start(const int port, const unsigned int cores) {
   while (server_is_active) {
     vector<uint> nums;
     //recvIntegers(nums, sockfd, remote_addr);
+
     vector<Message> buffer;
-    Message m;
-    do {
-      try {
-        recvMessage(m, sockfd, remote_addr);
-      } catch (const char* e) {
-        ExitErr(e, errno, __LINE__);
-      }
-      buffer.push_back(m);
-    } while (m.flag != LAST);
 
-    std::sort(buffer.begin(), buffer.end(), [] (Message& a, Message& b) {
-      return a.sequence < b.sequence;
-    });
-
-    uint expt = 0;
-    uint i = 0;
-    vector<uint> missingThings;
-    while (i < buffer.size()) {
-      if (buffer[i].sequence == expt) {
-        i++;
-        expt++;
-      } else {
-        missingThings.push_back(expt++);
-      }
-    }
-
-    if (missingThings.size() > 0) {
-      Message resend;
-      resend.flag = RESEND;
-      resend.num_values = 0;
-      for (uint missing : missingThings) {
-        pushItRealGood(resend, missing);
-      }
-      sendMessage(resend, sockfd, remote_addr);
-      do {
-        try {
-          recvMessage(m, sockfd, remote_addr);
-        } catch (const char* e) {
-          ExitErr(e, errno, __LINE__);
-        }
-        buffer.push_back(m);
-      } while (m.flag == NONE);
-    }
-
-    std::sort(buffer.begin(), buffer.end(), [] (Message& a, Message& b) {
-      return a.sequence < b.sequence;
-    });
+    recvMessages(buffer, sockfd, remote_addr);
 
     for (Message& message : buffer) {
       for (uint i = 0; i < message.num_values; i++) {
@@ -325,62 +388,9 @@ void RadixClient::msd(const char *hostname, const int port, std::vector<std::ref
 //------------------  Let's see what we've got!  -------------------------------
 
     std::cout << "Values array set to 0s. Waiting for recv.......\n";
+   recvMessages(messages, sockfd, remote_addr);
     list.clear();
-    vector<Message> buffer;
-    Message m;
-  //  recvMessages(buffer, sockfd, remote_addr);
-    do {
-      try {
-        recvMessage(m, sockfd, remote_addr);
-      } catch (const char* e) {
-        ExitErr(e, errno, __LINE__);
-      }
-      if (m.flag == RESEND) {
-        sendMessages(messages, sockfd, remote_addr);
-        buffer.clear();
-      } else {
-        buffer.push_back(m);
-      }
-    } while (m.flag == NONE);
-
-    std::sort(buffer.begin(), buffer.end(), [] (Message& a, Message& b) {
-      return a.sequence < b.sequence;
-    });
-
-    uint expt = 0;
-    uint i = 0;
-    vector<uint> missingThings;
-    while (i < buffer.size()) {
-      if (buffer[i].sequence == expt) {
-        i++;
-        expt++;
-      } else {
-        missingThings.push_back(expt++);
-      }
-    }
-
-    if (missingThings.size() > 0) {
-      Message resend;
-      resend.flag = RESEND;
-      for (uint missing : missingThings) {
-        pushItRealGood(resend, missing);
-      }
-      sendMessage(resend, sockfd, remote_addr);
-      do {
-        try {
-          recvMessage(m, sockfd, remote_addr);
-        } catch (const char* e) {
-          ExitErr(e, errno, __LINE__);
-        }
-        buffer.push_back(m);
-      } while (m.flag == NONE);
-    }
-
-    std::sort(buffer.begin(), buffer.end(), [] (Message& a, Message& b) {
-      return a.sequence < b.sequence;
-    });
-
-    for (Message& message : buffer) {
+    for (Message& message : messages) {
       for (uint i = 0; i < message.num_values; i++) {
         list.push_back(message.values[i]);
       }
