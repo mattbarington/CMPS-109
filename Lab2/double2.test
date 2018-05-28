@@ -1,0 +1,7 @@
+arena Circle 0,0,0 8
+shape Circle 0,0,0 4
+shape Polygon -4,-4,0 -4,4,0 4,4,0 4,-4,0
+0 0,0,0 true
+0 5,5,0 false
+1 0,0,0 true
+1 5,5,0 false

@@ -1,0 +1,40 @@
+Circle -15,-5 5 RegularConvexPolygon -21,11 21,11 21,-11 -21,-11 true Circles-In-Rectangle-1
+Circle -15,-5 5 RegularConvexPolygon -21,11 21,11 21,-11 -21,-11 true Circles-In-Rectangle-2
+Circle -5,-5 5 RegularConvexPolygon -21,11 21,11 21,-11 -21,-11 true Circles-In-Rectangle-3
+Circle -5,5 5 RegularConvexPolygon -21,11 21,11 21,-11 -21,-11 true Circles-In-Rectangle-4
+Circle 5,-5 5 RegularConvexPolygon -21,11 21,11 21,-11 -21,-11 true Circles-In-Rectangle-5
+Circle 5,5 5 RegularConvexPolygon -21,11 21,11 21,-11 -21,-11 true Circles-In-Rectangle-6
+Circle 15,-5 5 RegularConvexPolygon -21,11 21,11 21,-11 -21,-11 true Circles-In-Rectangle-7
+Circle 15,5 5 RegularConvexPolygon -21,11 21,11 21,-11 -21,-11 true Circles-In-Rectangle-8
+
+Circle -15,-5 5 RegularConvexPolygon -20,10 20,10 20,-10 -20,-10 true Circles-In-Rectangle-9
+Circle -15,-5 5 RegularConvexPolygon -20,10 20,10 20,-10 -20,-10 true Circles-In-Rectangle-10
+Circle -5,-5 5 RegularConvexPolygon -20,10 20,10 20,-10 -20,-10 true Circles-In-Rectangle-11
+Circle -5,5 5 RegularConvexPolygon -20,10 20,10 20,-10 -20,-10 true Circles-In-Rectangle-12
+Circle 5,-5 5 RegularConvexPolygon -20,10 20,10 20,-10 -20,-10 true Circles-In-Rectangle-13
+Circle 5,5 5  RegularConvexPolygon -20,10 20,10 20,-10 -20,-10 true Circles-In-Rectangle-14
+Circle 15,-5 5 RegularConvexPolygon -20,10 20,10 20,-10 -20,-10 true Circles-In-Rectangle-15
+Circle 15,5 5 RegularConvexPolygon -20,10 20,10 20,-10 -20,-10 true Circles-In-Rectangle-16
+
+Circle 16,4 4.01 RegularConvexPolygon -20,10 20,10 20,-10 -20,-10 false Circle-Partially-In-Rect-1
+Circle -16,4 4.01 RegularConvexPolygon -20,10 20,10 20,-10 -20,-10 false Circle-Partially-In-Rect-2
+Circle -16,-4 4.01 RegularConvexPolygon -20,10 20,10 20,-10 -20,-10 false Circle-Partially-In-Rect-3
+Circle 16,-4 4.01 RegularConvexPolygon -20,10 20,10 20,-10 -20,-10 false Circle-Partially-In-Rect-4
+
+Circle 10,10 7 RegularConvexPolygon -2,4 2,4 4,2 4,-2 2,-4 -2,-4 -4,-2 -4,2 false Circle-Out-of-Octagon-1
+Circle -10,10 7 RegularConvexPolygon -2,4 2,4 4,2 4,-2 2,-4 -2,-4 -4,-2 -4,2 false Circle-Out-of-Octagon-2
+Circle 10,-10 7 RegularConvexPolygon -2,4 2,4 4,2 4,-2 2,-4 -2,-4 -4,-2 -4,2 false Circle-Out-of-Octagon-3
+Circle -10,-10 7 RegularConvexPolygon -2,4 2,4 4,2 4,-2 2,-4 -2,-4 -4,-2 -4,2 false Circle-Out-of-Octagon-4
+
+Circle 550,550 75 RegularConvexPolygon 550,450 455,519 491,631 609,631 645,519 true Circle-In-Pentagon-1
+Circle 550,550 84 RegularConvexPolygon 550,450 455,519 491,631 609,631 645,519 false Circle-In-Pentagon-2
+Circle 545,545 84 RegularConvexPolygon 550,450 455,519 491,631 609,631 645,519 false Circle-In-Pentagon-3
+Circle 500,545 33 RegularConvexPolygon 550,450 455,519 491,631 609,631 645,519 true Circle-In-Pentagon-4
+Circle 500,545 34.7 RegularConvexPolygon 550,450 455,519 491,631 609,631 645,519 true Circle-In-Pentagon-5
+Circle 500,545 35 RegularConvexPolygon 550,450 455,519 491,631 609,631 645,519 false Circle-In-Pentagon-6
+Circle 500,530 160 RegularConvexPolygon 550,450 455,519 491,631 609,631 645,519 false Circle-In-Pentagon-7
+Circle 400,535 20 RegularConvexPolygon 550,450 455,519 491,631 609,631 645,519 false Circle-In-Pentagon-8
+
+ReuleauxTriangle -0,8.046 5.8,-2 -5.8,2 RegularConvexPolygon -8,10 8,10 8,-6 -8,-6 true Reuleaux-In-Square-1
+ReuleauxTriangle -0,8.046 5.8,-2 -5.8,2 RegularConvexPolygon -6,6 6,6 6,-6 -6,-6 false Reuleaux-In-Square-2
+ReuleauxTriangle -0,8.046 5.8,-2 -5.8,2 RegularConvexPolygon -7,-2.5 -7,11.5 7,11.5 7,-2.5 false Reuleaux-In-Square-3

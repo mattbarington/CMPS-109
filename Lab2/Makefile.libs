@@ -1,0 +1,4 @@
+# Add any statdard C libraruies you use here. For example, if you wanted to 
+# use POSIX threads (I don't advise doing this, btw) you'd say:
+# LIBS = -lpthread 
+LIBS = 

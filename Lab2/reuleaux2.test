@@ -1,0 +1,4 @@
+arena Circle 0,0,0 16
+shape ReuleauxTriangle 0,8,0 -7.6193,-7.6193,0 7.6193,-7.6193,0
+0 0,0,0 true
+0 10,10,0 false

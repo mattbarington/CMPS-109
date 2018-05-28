@@ -1,0 +1,11 @@
+Circle 0,0 5 ReuleauxTriangle 0,8 -7.6193,-7.6193 7.6193,-7.6193 true Circle-In-Reuleaux-1
+Circle 0,0 7 ReuleauxTriangle 0,8 -7.6193,-7.6193 7.6193,-7.6193 false Circle-In-Reuleaux-2
+Circle 4,0 3 ReuleauxTriangle 0,8 -7.6193,-7.6193 7.6193,-7.6193 true Circle-In-Reuleaux-3
+Circle 0,7 1 ReuleauxTriangle 0,8 -7.6193,-7.6193 7.6193,-7.6193 false Circle-In-Reuleaux-4
+
+ReuleauxTriangle 0,9.411 -6.982,-2.682 6.982,-2.682 ReuleauxTriangle 0,8.046 5.8,-2 -5.8,-2 false Reuleaux-In-Reuleaux-1
+ReuleauxTriangle 0,8.046 5.8,-2 -5.8,-2 ReuleauxTriangle 0,9.411 -6.982,-2.682 6.982,-2.682 true Reuleaux-In-Reuleaux-2
+ReuleauxTriangle 0,9.411 -6.982,-2.682 6.982,-2.682 ReuleauxTriangle 0,9.411 -6.982,-2.682 6.982,-2.682 true Reuleaux-In-Reuleaux-3
+ReuleauxTriangle 0,8.046 5.8,-2 -5.8,-2 ReuleauxTriangle 0,8.046 5.8,-2 -5.8,-2 true Reuleaux-In-Reuleaux-4
+ReuleauxTriangle 0,9.411 -6.982,-2.682 6.982,-2.682 ReuleauxTriangle 1,9.411 -5.982,-2.682 7.982,-2.682 false Reuleaux-In-Reuleaux-5
+ReuleauxTriangle 1,9.411 -5.982,-2.682 7.982,-2.682 ReuleauxTriangle 0,9.411 -6.982,-2.682 6.982,-2.682 false Reuleaux-In-Reuleaux-6

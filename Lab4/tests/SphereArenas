@@ -1,0 +1,21 @@
+Sphere 0,0,0 10 Sphere 0,0,0 11 true centered sphere inside of centered sphere
+Sphere 1,4,2 3 Sphere 5,5,4 20 true offcenter sphere inside of offcenter sphere
+
+# blah balh de blasksk
+Sphere 1,2,3 4 Sphere 1,2,3 4 true same sphere - 1
+Sphere 0,0,0 200 Sphere 0,0,0 200 true same sphere - 2
+Sphere -4,-3,-2 1 Sphere -4,-3,-2 1 true same sphere - 3
+Sphere -9,8,-7 19 Sphere -9,8,-7 19 true same sphere - 4
+
+Sphere 5,2.3,4.9 17 Sphere 0,0,9 19 false sphere partially in sphere
+
+Cube -4,4,4 4,4,4 4,-4,4 -4,-4,4 -4,4,-4 4,4,-4 4,-4,-4 -4,-4,-4 Sphere 0,0,0 20 true Cube-In-Sphere-1
+Cube -4,4,4 4,4,4 4,-4,4 -4,-4,4 -4,4,-4 4,4,-4 4,-4,-4 -4,-4,-4 Sphere 0,0,0 5 false Cube-In-Sphere-2
+Cube -4,4,4 4,4,4 4,-4,4 -4,-4,4 -4,4,-4 4,4,-4 4,-4,-4 -4,-4,-4 Sphere 0,0,0 4.20 false Cube-In-Sphere-3
+Cube -4,4,4 4,4,4 4,-4,4 -4,-4,4 -4,4,-4 4,4,-4 4,-4,-4 -4,-4,-4 Sphere 0,0,0 6.9 false Cube-In-Sphere-4
+Cube -4,4,4 4,4,4 4,-4,4 -4,-4,4 -4,4,-4 4,4,-4 4,-4,-4 -4,-4,-4 Sphere 0,0,0 6.95 true Cube-In-Sphere-5
+Cube -4,4,4 4,4,4 4,-4,4 -4,-4,4 -4,4,-4 4,4,-4 4,-4,-4 -4,-4,-4 Sphere 3,-3,3 12 false Cube-In-Sphere-6
+Cube -4,4,4 4,4,4 4,-4,4 -4,-4,4 -4,4,-4 4,4,-4 4,-4,-4 -4,-4,-4 Sphere 3,-3,3 12.2 true Cube-In-Sphere-5
+
+ReuleauxTetrahedron 0,8.046,0 -5.8,-2,0 5.8,-2,0 0,1.3486,3.34863 Sphere 0,0,0 12 true Tetrahedron-In-Sphere-1
+ReuleauxTetrahedron 0,8.046,0 -5.8,-2,0 5.8,-2,0 0,1.3486,3.34863 Sphere 0,0,0 6 false Tetrahedron-In-Sphere-2

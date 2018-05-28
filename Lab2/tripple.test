@@ -1,0 +1,10 @@
+arena Polygon -10,-10,0 -10,10,0 10,10,0 10,-10,0
+shape Circle 0,0,0 2
+shape Polygon -4,-4,0 -4,4,0 4,4,0 4,-4,0
+shape Polygon 0,8,0 -7.6193,-7.6193,0 7.6193,-7.6193,0
+0 0,0,0 true
+0 9,9,0 false
+1 0,0,0 true
+1 7,-7,0 false
+2 1,1,0 true
+2 3,-3,0 false
