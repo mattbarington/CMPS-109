@@ -8,7 +8,7 @@
 #include <netinet/in.h>
 
 #define HASH_LENGTH       13
-#define MAX_HASHES       128
+#define MAX_HASHES        64
 #define MAX_HOSTNAME_LEN  64
 #define MAX_CRUZID_LEN    32
 
@@ -20,7 +20,7 @@
  */
 typedef struct message_t {
     char cruzid[MAX_CRUZID_LEN];             // Who this datagram is for
-    char passwds[MAX_HASHES][HASH_LENGTH+1]; // NUM_PASSWD plait text passwords or password hashes
+    char passwds[MAX_HASHES][HASH_LENGTH+1]; // NUM_PASSWD plain text passwords or password hashes
     unsigned int num_passwd;                 // Number of plain text passwords or password  hases in PASSWDS
     char hostname[MAX_HOSTNAME_LEN];         // Host to return decrypted passwords to over TCP
     unsigned int port;                       // Port to return decrypted passwords to
