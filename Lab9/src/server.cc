@@ -18,9 +18,33 @@
 using std::string;
 using std::vector;
 
+#define PASSLEN 4
+
 static void ExitErr(std::string source, int err, int line) {
   std::cout << source << ": '" << strerror(err) << "' error on line " << line << std::endl;
   exit(-1);
+}
+
+static void encrypt(char* passwd, char* hash) {
+  // std::cout << "psswd:" << passwd << std::endl;
+  char salt[] = "$1";
+  const char *const seedchars =
+    "qwertyuiopasdfghjklzxcvbnm"
+    "QWERTYUIOPLKJHGFDSAZXCVBNM"
+    "1234567890";
+  const int num_chars = strlen(seedchars);
+  unsigned long seed[2];
+
+  /* Generate a (not very) random seed */
+  seed[0] = time(NULL);
+  seed[1] = getpid() ^ (seed[0] >> 14 & 0x30000);
+
+  /* Turn it into printable characters from ‘seedchars’. */
+  for (int i = 0; i < 2; i++)
+    salt[i] = seedchars[(seed[i/5] >> (i%5)*6) & 0x3f];
+
+  strcpy(hash, crypt(passwd, salt));
+  // std::cout << "hash: " << hash << std::endl;
 }
 
 static void htonm(Message& m) {
@@ -31,10 +55,6 @@ static void htonm(Message& m) {
 static void ntohm(Message& m) {
   m.num_passwds = ntohl(m.num_passwds);
   m.port = ntohs(m.port);
-}
-
-static void push(char* password, uint len, Message& m) {
-
 }
 
 static void send(Message& m) {
@@ -71,16 +91,18 @@ int main(int argc, char** argv) {
   }
   uint PORT = get_unicast_port();
   int num_passwords = atoi(argv[1]);
-  char* password = argv[2];
+  char hash[13];
+  encrypt(argv[2], hash);
+  // std::cout << "password: " << hash << std::endl;
   string cruzid = "movenden";
   Message message;
   memset(&message, 0, sizeof(message));
-  strcpy(message.hostname, "localhost");
+  strcpy(message.hostname, "Thor");
   strcpy(message.cruzid, "movenden");
   message.port = PORT;
 
   for (int i = 0; i < num_passwords; i++) {
-    strcpy(message.passwds[message.num_passwds++], argv[2]);
+    strcpy(message.passwds[message.num_passwds++], hash);
   }
 
   send(message);
@@ -99,14 +121,11 @@ int main(int argc, char** argv) {
   listen(sockrecv,5);
   std::cout << "I am listening on port " << PORT << std::endl;
 
-
   socklen_t len = sizeof(crack_addr);
   int newsock = accept(sockrecv, (struct sockaddr*)&crack_addr, &len);
   if (newsock < 0) ExitErr("newsock", errno, __LINE__);
   memset(&message, 0, sizeof(message));
   std::cout << "Accepted connection. Waiting for response\n";
-
-
 
   if (read(newsock, &message, sizeof(message)) < 0) ExitErr("read",errno,__LINE__);
 
@@ -115,6 +134,6 @@ int main(int argc, char** argv) {
     std::cout << message.passwds[i] << std::endl;
   }
 
-  std::cout << "We've made it this far! push on\n";
-
+  close(sockrecv);
+  close(newsock);
 }

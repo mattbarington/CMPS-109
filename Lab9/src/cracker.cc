@@ -20,6 +20,9 @@ using std::string;
 using std::vector;
 using std::thread;
 
+#define PASSLEN 4
+
+
 static void ExitErr(std::string source, int err, int line) {
   std::cout << source << " error: '" << strerror(err) << "' on line " << line << std::endl;
   exit(-1);
@@ -85,25 +88,52 @@ static void send(Message& m) {
   if (write(socksend, &m, sizeof(m)) < 0) ExitErr("write back", errno, __LINE__);
 }
 
+static void threadedCrack(char* hash){//, char* password) {
+  const char *const seedchars =
+    "qwertyuiopasdfghjklzxcvbnm"
+    "QWERTYUIOPLKJHGFDSAZXCVBNM"
+    "1234567890";
+  const int num_chars = strlen(seedchars);
+  std::cout << "hash: " << hash;
+  char password[5];
+  for (int a = 0; a < num_chars; a++) {
+    for (int b = 0; b < num_chars; b++) {
+      for (int c = 0; c < num_chars; c++) {
+        for (int d = 0; d < num_chars; d++) {
+          password[0] = seedchars[a];
+          password[1] = seedchars[b];
+          password[2] = seedchars[c];
+          password[3] = seedchars[d];
+          char* newhash = crypt(password, hash);
+          if (strcmp(newhash, hash) == 0) {
+            std::cout << "We found it! pasword is " << password << std::endl;
+            strcpy(hash, password);
+            return;
+          }
+        }
+      }
+    }
+  }
+  std::cout << "nothing was found :(\n";
+};
+
 int main(int argc, char** argv) {
   vector<thread> threads;
   Message msg;
-
   recv(msg);
 
   std::atomic<int> active_threads(0);
   char psswds[MAX_HASHES][5];
   for (uint i = 0; i < msg.num_passwds; i++) {
-    std::cout << "Cracking " << msg.passwds[i] << std::endl;
-    threads.push_back(thread(crack, std::ref(msg.passwds[i]), std::ref(psswds[i])));
+    threads.push_back(thread(threadedCrack, std::ref(msg.passwds[i])));//, std::ref(psswds[i])));
   }
   for (thread& t : threads) {
     t.join();
   }
   threads.clear();
   for (uint i = 0; i < msg.num_passwds; i++) {
-    std::cout << "packaging " << psswds[i] << std::endl;
-    strcpy(msg.passwds[i],psswds[i]);
+    std::cout << "packaging " << msg.passwds[i] << std::endl;
+    //strcpy(msg.passwds[i],psswds[i]);
   }
 
 //--------------  setup tcp connection to return passwords  --------------------------
