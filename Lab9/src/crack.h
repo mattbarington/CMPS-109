@@ -21,7 +21,7 @@
 typedef struct message_t {
     char cruzid[MAX_CRUZID_LEN];             // Who this datagram is for
     char passwds[MAX_HASHES][HASH_LENGTH+1]; // NUM_PASSWD plain text passwords or password hashes
-    unsigned int num_passwd;                 // Number of plain text passwords or password  hases in PASSWDS
+    unsigned int num_passwds;                // Number of plain text passwords or password  hases in PASSWDS
     char hostname[MAX_HOSTNAME_LEN];         // Host to return decrypted passwords to over TCP
     unsigned int port;                       // Port to return decrypted passwords to
 }
@@ -38,11 +38,16 @@ Message;
 void crack(const char *hash, char *passwd);
 
 /*
- * Returns the unicast address the currently logged in user should use
+ * Returns the multicast address the currently logged in user should use
  */
-in_addr_t get_unicast_address();
+in_addr_t get_multicast_address();
 
 /*
- * Returns the port the currently logged in user should use
+ * Returns the multicast port the currently logged in user should use
  */
-unsigned int get_port();
+unsigned int get_multicast_port();
+
+/*
+ * Returns the unicast port the currently logged in user should use
+ */
+unsigned int get_unicast_port();

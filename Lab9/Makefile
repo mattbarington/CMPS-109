@@ -2,7 +2,7 @@
 #
 # Copyright (C) 2018 David C. Harrison. All right reserved.
 #
-# You may not use, distribute, publish, or modify this code without 
+# You may not use, distribute, publish, or modify this code without
 # the express written permission of the copyright holder.
 #
 #######################################################################
@@ -12,14 +12,23 @@ CC = g++ -std=c++17
 
 SRC=$(wildcard src/*.cc)
 
-all: crack
+SERVER_SRC = src/server.cc src/crack.h
+CRACKER_SRC = src/cracker.cc src/crack.h
 
-crack: $(SRC) crack.o
+all: cracker server
+
+cracker: $(CRACKER_SRC) crack.o
 	$(CC) -o $@ $^ $(CFLAGS)
 
-clean:
-	@rm crack
+server: $(SERVER_SRC) crack.o
+	$(CC) -o $@ $^ $(CFLAGS)
 
-submit: clean 
+# crack: src/crack.cc crack.o src/crack.h
+# 	g++ -std=c++17 -o crack $(CFLAGS)
+
+clean:
+	@rm cracker server
+
+submit: clean
 	@tar czvf ~/CMPS109-Lab9.tar.gz \
-	    src/*.cc src/*.h 
+	    src/*.cc src/*.h
