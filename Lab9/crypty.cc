@@ -4,6 +4,13 @@
 #include <crypt.h>
 #include <cstring>
 #include <iostream>
+#include <thread>
+#include <atomic>
+#include <mutex>
+#include <vector>
+
+using std::vector;
+using std::thread;
 
 int main(int argc, char** argv) {
   char salt[] = "$1";
@@ -35,7 +42,29 @@ int main(int argc, char** argv) {
   std::cout << "User Passwd: " << user_passwd << std::endl;
   std::cout << "hash:" << hash << std::endl;
 
-  char password[4];
+
+  vector<thread> threads;
+  std::atomic<bool> cracked(false);
+  std::mutex lock;
+  for (int a = 0; a < num_chars; a++) {
+    threads.push_back(thread{ [&lock, a, hash, &cracked, &seedchars] {
+      char password[5];
+      if (cracked) return;
+      for (int b = 0; b < num_chars; b++) {
+        for (int c = 0; c < num_chars; c++) {
+          for (int d = 0; d < num_chars; d++) {
+            password[0] = seedchars[a];
+            password[1] = seedchars[b];
+            password[2] = seedchars[c];
+            password[3] = seedchars[d];
+            if (strcmp(crypt(password, hash), hash) == 0) {
+              lock.lock();
+              cracked = true;
+              strcpy(hash, password);
+              lock.unlock();
+            }
+    }}}};);
+  char password[5];
   for (int a = 0; a < num_chars; a++) {
     for (int b = 0; b < num_chars; b++) {
       for (int c = 0; c < num_chars; c++) {

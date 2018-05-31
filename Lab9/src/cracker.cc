@@ -15,6 +15,7 @@
 #include <arpa/inet.h>
 
 #include "crack.h"
+// #include "cptl_stl.h"
 
 using std::string;
 using std::vector;
@@ -88,7 +89,7 @@ static void send(Message& m) {
   if (write(socksend, &m, sizeof(m)) < 0) ExitErr("write back", errno, __LINE__);
 }
 
-static void threadedCrack(char* hash){//, char* password) {
+static void threadedCrack(char* hash){
   const char *const seedchars =
     "qwertyuiopasdfghjklzxcvbnm"
     "QWERTYUIOPLKJHGFDSAZXCVBNM"
@@ -106,7 +107,6 @@ static void threadedCrack(char* hash){//, char* password) {
           password[3] = seedchars[d];
           char* newhash = crypt(password, hash);
           if (strcmp(newhash, hash) == 0) {
-            std::cout << "We found it! pasword is " << password << std::endl;
             strcpy(hash, password);
             return;
           }
@@ -125,19 +125,17 @@ int main(int argc, char** argv) {
   std::atomic<int> active_threads(0);
   char psswds[MAX_HASHES][5];
   for (uint i = 0; i < msg.num_passwds; i++) {
-    threads.push_back(thread(threadedCrack, std::ref(msg.passwds[i])));//, std::ref(psswds[i])));
+    threads.push_back(thread(threadedCrack, std::ref(msg.passwds[i])));
   }
   for (thread& t : threads) {
     t.join();
   }
   threads.clear();
-  for (uint i = 0; i < msg.num_passwds; i++) {
-    std::cout << "packaging " << msg.passwds[i] << std::endl;
-    //strcpy(msg.passwds[i],psswds[i]);
-  }
 
 //--------------  setup tcp connection to return passwords  --------------------------
 
   send(msg);
+
+  std::cout << "let's make a thread pool\n";
 
 }

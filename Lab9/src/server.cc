@@ -97,7 +97,7 @@ int main(int argc, char** argv) {
   string cruzid = "movenden";
   Message message;
   memset(&message, 0, sizeof(message));
-  strcpy(message.hostname, "Thor");
+  strcpy(message.hostname, "localhost");
   strcpy(message.cruzid, "movenden");
   message.port = PORT;
 

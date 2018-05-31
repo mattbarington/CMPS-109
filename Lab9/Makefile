@@ -13,7 +13,7 @@ CC = g++ -std=c++17
 SRC=$(wildcard src/*.cc)
 
 SERVER_SRC = src/server.cc src/crack.h
-CRACKER_SRC = src/cracker.cc src/crack.h
+CRACKER_SRC = src/cracker.cc src/crack.h #src/cptl_stl.h
 
 all: cracker server
 
