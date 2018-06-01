@@ -93,17 +93,20 @@ int main(int argc, char** argv) {
   int num_passwords = atoi(argv[1]);
   char hash[13];
   encrypt(argv[2], hash);
-  // std::cout << "password: " << hash << std::endl;
+  char thishost[128];
+  gethostname(thishost, 128);
+  std::cout << "thishost: " << thishost << std::endl;
   string cruzid = "movenden";
   Message message;
   memset(&message, 0, sizeof(message));
-  strcpy(message.hostname, "localhost");
+  strcpy(message.hostname, thishost);
   strcpy(message.cruzid, "movenden");
   message.port = PORT;
 
   for (int i = 0; i < num_passwords; i++) {
     strcpy(message.passwds[message.num_passwds++], hash);
   }
+  // strcpy(message.passwds[message.num_passwds - 1], "lmao");
 
   send(message);
 

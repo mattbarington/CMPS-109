@@ -57,11 +57,12 @@ int main(int argc, char** argv) {
             password[1] = seedchars[b];
             password[2] = seedchars[c];
             password[3] = seedchars[d];
-            if (strcmp(crypt(password, hash), hash) == 0) {
-              lock.lock();
-              cracked = true;
+            char* newhash = crypt(password, hash);
+            if (strcmp(newhash, hash) == 0) {
+              // lock.lock();
+              // cracked = true;
               strcpy(hash, password);
-              lock.unlock();
+              // lock.unlock();
             }
     }}}};);
   char password[5];
