@@ -196,40 +196,52 @@ static void olafCrack(Message& msg) {
   int s = start(OLAF, msg.num_passwds);
   int e = end(OLAF, msg.num_passwds);
   std::cout << "olaf range: " << s<< ", " << e;
+  vector<thread> threads;
   for (int i = s; i < e; i++) {
     std::cout << "\nOlaf decrypting msg[ " << i << " ] : " << msg.passwds[i] << std::endl;
-    threadedCrack(msg.passwds[i]);
+    threads.push_back(thread(threadedCrack, std::ref(msg.passwds[i])));
+    //threadedCrack(msg.passwds[i]);
   }
+  for (thread& t : threads) { t.join(); }
 }
 
 static void thorCrack(Message& msg) {
   int s = start(THOR, msg.num_passwds);
   int e = end(THOR, msg.num_passwds);
   std::cout << "thor range: " << s << ", " << e;
+  vector<thread> threads;
   for (int i = s; i < e; i++) {
     std::cout << "\nThor decrypting msg[ " << i << " ] : " << msg.passwds[i] << std::endl;
-    threadedCrack(msg.passwds[i]);
+    threads.push_back(thread(threadedCrack, std::ref(msg.passwds[i])));
+    // threadedCrack(msg.passwds[i]);
   }
+  for (thread& t : threads) { t.join(); }
 }
 
 static void grolliffeCrack(Message& msg) {
   int s = start(GROL, msg.num_passwds);
   int e = end(GROL, msg.num_passwds);
   std::cout << "grolliffe range: " << s << ", " << e;
+  vector<thread> threads;
   for (int i = s; i < e; i++) {
     std::cout << "\ngrolliffe decrypting msg[ " << i << " ] : " << msg.passwds[i] << std::endl;
-    threadedCrack(msg.passwds[i]);
+    threads.push_back(thread(threadedCrack, std::ref(msg.passwds[i])));
+    // threadedCrack(msg.passwds[i]);
   }
+  for (thread& t : threads) { t.join(); }
 }
 
 static void graculusCrack(Message& msg) {
   int s = start(GRAC, msg.num_passwds);
   int e = end(GRAC, msg.num_passwds);
   std::cout << "graculus range: " << s << ", " << e;
+  vector<thread> threads;
   for (int i = s; i < e; i++) {
     std::cout << "\ngraculusCrack decrypting msg[ " << i << " ] : " << msg.passwds[i] << std::endl;
-    threadedCrack(msg.passwds[i]);
+    threads.push_back(thread(threadedCrack, std::ref(msg.passwds[i])));
+    // threadedCrack(msg.passwds[i]);
   }
+  for (thread& t : threads) { t.join(); }
 }
 
 static void splitCrack(Message& msg) {
@@ -261,6 +273,7 @@ static void listen4merge(Message& msg) {
 
   Message m;
   socklen_t len = sizeof(crack_addr);
+  int gotapackfrom = 0;
   for (int i = 0; i < 3; i++) {
     std::cout << "passwords:\n";
     for (uint p = 0; p < msg.num_passwds; p++) {
@@ -274,6 +287,7 @@ static void listen4merge(Message& msg) {
     if (read(newsock, &m, sizeof(m)) < 0) ExitErr("read",errno,__LINE__);
     ntohm(m);
     if (strcmp(m.hostname,"graculus") == 0) {
+      gotapackfrom++;
       std::cout << "Received packet from graculus\n";
       for (int p = start(GRAC, m.num_passwds); p < end(GRAC, m.num_passwds); p++) {
         strcpy(msg.passwds[p], m.passwds[p]);
@@ -284,13 +298,16 @@ static void listen4merge(Message& msg) {
         strcpy(msg.passwds[p], m.passwds[p]);
       }
     } else if (strcmp(m.hostname, "grolliffe") == 0) {
+      gotapackfrom++;
       std::cout << "Received packet from grolliffe\n";
       for (int p = start(GROL, m.num_passwds); p < end(GROL, m.num_passwds); p++) {
         strcpy(msg.passwds[p], m.passwds[p]);
       }
     }
     close(newsock);
+    if ( gotapackfrom == 2 ) break;
   }
+  close(sockrecv);
 }
 
 static void send2MASTER(Message& msg) {
