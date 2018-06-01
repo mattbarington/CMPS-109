@@ -114,7 +114,7 @@ static void recv(Message& msg) {
   int n = recvfrom(sockfd, &msg, sizeof(msg), 0, 0, 0);
   if (n < 0) { ExitErr("recv", errno, __LINE__); }
   ntohm(msg);
-  // close(sockfd);
+  close(sockfd);
 }
 
 static void send(Message& m) {
@@ -232,45 +232,69 @@ static void graculusCrack(Message& msg) {
   }
 }
 
-
 static void splitCrack(Message& msg) {
-
+  if (iamOlaf()){
+    olafCrack(msg);
+  } else if (iamThor()) {
+    thorCrack(msg);
+  } else if (iamGrolliffe()) {
+    grolliffeCrack(msg);
+  } else if (iamGraculus()) {
+    graculusCrack(msg);
+  }
 }
 
 static void listen4merge(Message& msg) {
+  std::cout << "Master, Olaf, is listening 4 merge\n";
   int sockrecv = socket(AF_INET, SOCK_STREAM, 0);
   if (sockrecv < 0) {ExitErr("sockrecv", errno, __LINE__); }
-
   struct sockaddr_in server_addr;
   struct sockaddr_in crack_addr;
   memset(&crack_addr, 0, sizeof(crack_addr));
   memset(&server_addr, 0, sizeof(server_addr));
   server_addr.sin_family = AF_INET;
   server_addr.sin_addr.s_addr = INADDR_ANY;
-  server_addr.sin_port = htons(msg.port);
+  server_addr.sin_port = htons(get_unicast_port());
   if (bind(sockrecv, (struct sockaddr*) &server_addr, sizeof(server_addr)) < 0) ExitErr("bind",errno,__LINE__);
   listen(sockrecv,5);
-  std::cout << "I am listening on port " << msg.port << std::endl;
+  std::cout << "I am listening on port " << get_unicast_port() << std::endl;
 
   Message m;
+  socklen_t len = sizeof(crack_addr);
   for (int i = 0; i < 3; i++) {
-    socklen_t len = sizeof(crack_addr);
+    std::cout << "passwords:\n";
+    for (uint p = 0; p < msg.num_passwds; p++) {
+      std::cout << msg.passwds[p] << std::endl;
+    }
+
     int newsock = accept(sockrecv, (struct sockaddr*)&crack_addr, &len);
     if (newsock < 0) ExitErr("newsock", errno, __LINE__);
     memset(&m, 0, sizeof(m));
     std::cout << "Accepted connection. Waiting for response\n";
     if (read(newsock, &m, sizeof(m)) < 0) ExitErr("read",errno,__LINE__);
-    if (iamGraculus()) {
-      //copy grac stufff
-    } else if (iamThor()) {
-      //copy thor stuff
-    } else if (iamGrolliffe()) {
-      //copy grollife stuff
+    ntohm(m);
+    if (strcmp(m.hostname,"graculus") == 0) {
+      std::cout << "Received packet from graculus\n";
+      for (int p = start(GRAC, m.num_passwds); p < end(GRAC, m.num_passwds); p++) {
+        strcpy(msg.passwds[p], m.passwds[p]);
+      }
+    } else if (strcmp(m.hostname,"thor") == 0) {
+      std::cout << "Received packet from thor\n";
+      for (int p = start(THOR, m.num_passwds); p < end(THOR, m.num_passwds); p++) {
+        strcpy(msg.passwds[p], m.passwds[p]);
+      }
+    } else if (strcmp(m.hostname, "grolliffe") == 0) {
+      std::cout << "Received packet from grolliffe\n";
+      for (int p = start(GROL, m.num_passwds); p < end(GROL, m.num_passwds); p++) {
+        strcpy(msg.passwds[p], m.passwds[p]);
+      }
     }
+    close(newsock);
   }
 }
 
 static void send2MASTER(Message& msg) {
+
   int socksend = socket(AF_INET, SOCK_STREAM, 0);
   if (socksend < 0) { ExitErr("setting socket", errno, __LINE__);}
 
@@ -286,7 +310,7 @@ static void send2MASTER(Message& msg) {
   server_addr.sin_port = htons(get_unicast_port());
 
   printf("Try to connect:\nhostname: %s\nport# %d\n", MASTER, get_unicast_port());
-
+  gethostname(msg.hostname, MAX_HOSTNAME_LEN);
   htonm(msg);
 
   if (connect(socksend, (struct sockaddr*) &server_addr, sizeof(server_addr)) < 0) ExitErr("Connect", errno, __LINE__);
@@ -299,20 +323,33 @@ int main(int argc, char** argv) {
     std::cout << " goteem\n";
   Message msg;
   recv(msg);
+  std::cout << "ami master?\n";
+  thread merger;
+  if (iamOlaf()) {
+    merger = thread(listen4merge, std::ref(msg));
+    std::cout << "let's get mergy\n";
+    //listen4merge(msg);
+  }
 
-
-
+  splitCrack(msg);
+  // olafCrack(msg);
+  // thorCrack(msg);
+  // grolliffeCrack(msg);
+  // graculusCrack(msg);
   // crack(msg);
-  olafCrack(msg);
-  thorCrack(msg);
-  grolliffeCrack(msg);
-  graculusCrack(msg);
+  if (!iamOlaf()) {
+    send2MASTER(msg);
+  }
 
 
 //--------------  setup tcp connection to return passwords  --------------------------
-
-
-  send(msg);
+  if (iamOlaf()) {
+    for (uint p = 0; p < msg.num_passwds; p++) {
+      std::cout << msg.passwds[p] << std::endl;
+    }
+    merger.join();
+    send(msg);
+  }
 
   std::cout << "let's make a thread pool\n";
 
